@@ -36,11 +36,11 @@ class Log
      * @param MailInfoType $mail_info Parameters voor de mail logger. Null
      * betekent niet mailen.
      */
-    final private function __construct(
+    final public function __construct(
         Level $level,
         string $log_dir,
-        ?string $filename,
-        ?array $mail_info,
+        ?string $filename = null,
+        ?array $mail_info = null,
     ) {
         $this->level = $level;
         $this->log_dir = $log_dir;
