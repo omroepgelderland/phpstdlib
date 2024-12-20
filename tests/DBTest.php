@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 final class DBTest extends TestCase
 {
-    private function get_mock_db( MockObject $mock_medoo): MockObject
+    private function get_mock_db(MockObject $mock_medoo): MockObject
     {
         $mock_db = $this->getMockBuilder(DB::class)
             ->disableOriginalConstructor()
@@ -33,7 +33,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
         );
         $this->assertEquals('foo', $actual);
@@ -50,7 +50,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
             [
                 '[>]account' => ['author_id' => 'user_id'],
@@ -70,7 +70,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
         );
         $this->assertNull($actual);
@@ -87,7 +87,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
             [
                 '[>]account' => ['author_id' => 'user_id'],
@@ -108,7 +108,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
             [],
             false
@@ -127,7 +127,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
             [
                 '[>]account' => ['author_id' => 'user_id'],
@@ -148,7 +148,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
             [],
             false
@@ -167,7 +167,7 @@ final class DBTest extends TestCase
             'table',
             'column',
             [
-                'id' => 1
+                'id' => 1,
             ],
             [
                 '[>]account' => ['author_id' => 'user_id'],
@@ -175,5 +175,4 @@ final class DBTest extends TestCase
             false
         );
     }
-
 }

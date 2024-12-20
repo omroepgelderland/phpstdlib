@@ -105,7 +105,7 @@ function scandir_recursive(string $path)
  */
 function is_cli(): bool
 {
-    return \php_sapi_name() === 'cli' && isset($_SERVER['TERM']);
+    return \php_sapi_name() === 'cli' && (isset($_SERVER['TERM']) || isset($_SERVER['VSCODE_CWD']));
 }
 
 /**
