@@ -13,6 +13,15 @@ use function gldstdlib\safe\filesize;
 
 /**
  * Abstractielaag voor Amazon S3 Blue Billywig CDN.
+ * @phpstan-type ConfigType object{
+ *     version: string,
+ *     region: string,
+ *     access_key_id: string,
+ *     secret_access_key: string,
+ *     bucket_naam: string,
+ *     media_root: string,
+ *     url_root: string
+ * }
  */
 class S3
 {
@@ -32,15 +41,7 @@ class S3
 
     /**
      * Maakt een API koppelingobject
-     * @param object{
-     *     version: string,
-     *     region: string,
-     *     access_key_id: string,
-     *     secret_access_key: string,
-     *     bucket_naam: string,
-     *     media_root: string,
-     *     url_root: string
-     * } $config_data Configuratie
+     * @param ConfigType $config_data Configuratie
      */
     public function __construct(
         private Log $log,
