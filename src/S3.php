@@ -42,8 +42,10 @@ class S3
      *     url_root: string
      * } $config_data Configuratie
      */
-    public function __construct(object $config_data)
-    {
+    public function __construct(
+        private Log $log,
+        object $config_data,
+    ) {
         $this->version = $config_data->version;
         $this->region = $config_data->region;
         $this->access_key_id = $config_data->access_key_id;
@@ -135,7 +137,6 @@ class S3
      * @throws \Exception Bij uploadfouten
      */
     public function upload(
-        Log $log,
         string $lokaal_pad,
         string $remote_pad,
         bool $is_publiek = true,
@@ -190,13 +191,12 @@ class S3
                 $this->get_client()->abortMultipartUpload($e->getState()->getId());
                 throw $e;
             } else {
-                $log->notice(
+                $this->log->notice(
                     'S3::upload("%s", "%s") mislukt. Doe nog een poging.',
                     $lokaal_pad,
                     $remote_pad
                 );
                 return $this->upload(
-                    $log,
                     $lokaal_pad,
                     $remote_pad,
                     $is_publiek,
