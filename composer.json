@@ -20,8 +20,10 @@
             "src/safe/dir.php",
             "src/safe/fileinfo.php",
             "src/safe/filesystem.php",
+            "src/safe/ftp.php",
             "src/safe/iconv.php",
             "src/safe/json.php",
+            "src/safe/ldap.php",
             "src/safe/pcre.php"
 		]
 	},

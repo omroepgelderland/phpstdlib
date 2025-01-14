@@ -23,6 +23,7 @@ function json_decode(
     int $depth = 512,
     int $flags = 0
 ): mixed {
+    \error_clear_last();
     $data = \json_decode($json, $associative, $depth, $flags);
     if (!($flags & \JSON_THROW_ON_ERROR) && \JSON_ERROR_NONE !== \json_last_error()) {
         throw JsonException::createFromPhpError();
@@ -71,7 +72,6 @@ function json_decode(
  * @param int<1, max> $depth Set the maximum depth. Must be greater than zero.
  * @return string Returns a JSON encoded string on success.
  * @throws JsonException
- *
  */
 function json_encode(
     mixed $value,

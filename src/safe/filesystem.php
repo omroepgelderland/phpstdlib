@@ -134,7 +134,6 @@ function file_get_contents(
  * stream_context_create.
  * @return int This function returns the number of bytes that were written to the file.
  * @throws FilesystemException
- *
  */
 function file_put_contents(
     string $filename,
@@ -142,7 +141,7 @@ function file_put_contents(
     int $flags = 0,
     $context = null
 ): int {
-    error_clear_last();
+    \error_clear_last();
     if ($context !== null) {
         $safeResult = \file_put_contents($filename, $data, $flags, $context);
     } else {
@@ -158,11 +157,9 @@ function file_put_contents(
  * Gets the size for the given file.
  *
  * @param $filename Path to the file.
- * @return int Returns the size of the file in bytes, or FALSE (and generates an error
- * of level E_WARNING) in case of an error.
- * @throws FilesystemException
+ * @return int Returns the size of the file in bytes.
+ * @throws FilesystemException in case of an error
  * @phpstan-impure
- *
  */
 function filesize(string $filename): int
 {

@@ -5,6 +5,174 @@ declare(strict_types=1);
 namespace gldstdlib\safe;
 
 /**
+ * Perform a regular expression match
+ * @link https://php.net/manual/en/function.preg-match.php
+ * @param $pattern <p>
+ * The pattern to search for, as a string.
+ * </p>
+ * @param $subject <p>
+ * The input string.
+ * </p>
+ * @param string[] &$matches [optional] <p>
+ * If <i>matches</i> is provided, then it is filled with
+ * the results of search. $matches[0] will contain the
+ * text that matched the full pattern, $matches[1]
+ * will have the text that matched the first captured parenthesized
+ * subpattern, and so on.
+ * </p>
+ * @param-out string[] $matches
+ * @param 0|256|512|768 $flags [optional] <p>
+ * <i>flags</i> can be the following flag:
+ * <b>PREG_OFFSET_CAPTURE</b>
+ * <blockquote>
+ * If this flag is passed, for every occurring match the appendant string
+ * offset will also be returned. Note that this changes the value of
+ * <i>matches</i> into an array where every element is an
+ * array consisting of the matched string at offset 0
+ * and its string offset into <i>subject</i> at offset 1.
+ * <pre>
+ * <code>
+ * preg_match('/(foo)(bar)(baz)/', 'foobarbaz', $matches, PREG_OFFSET_CAPTURE);
+ * print_r($matches);
+ * </code>
+ * </pre>
+ * The above example will output:
+ * <pre>
+ * Array
+ * (
+ *     [0] => Array
+ *         (
+ *             [0] => foobarbaz
+ *             [1] => 0
+ *         )
+ *
+ *     [1] => Array
+ *         (
+ *             [0] => foo
+ *             [1] => 0
+ *         )
+ *
+ *     [2] => Array
+ *         (
+ *             [0] => bar
+ *             [1] => 3
+ *         )
+ *
+ *     [3] => Array
+ *         (
+ *             [0] => baz
+ *             [1] => 6
+ *         )
+ *
+ * )
+ * </pre>
+ * </blockquote>
+ * <b>PREG_UNMATCHED_AS_NULL</b>
+ * <blockquote>
+ * If this flag is passed, unmatched subpatterns are reported as NULL;
+ * otherwise they are reported as an empty string.
+ * <pre>
+ * <code>
+ * preg_match('/(a)(b)*(c)/', 'ac', $matches);
+ * var_dump($matches);
+ * preg_match('/(a)(b)*(c)/', 'ac', $matches, PREG_UNMATCHED_AS_NULL);
+ * var_dump($matches);
+ * </code>
+ * </pre>
+ * The above example will output:
+ * <pre>
+ * array(4) {
+ *   [0]=>
+ *   string(2) "ac"
+ *   [1]=>
+ *   string(1) "a"
+ *   [2]=>
+ *   string(0) ""
+ *   [3]=>
+ *   string(1) "c"
+ * }
+ * array(4) {
+ *   [0]=>
+ *   string(2) "ac"
+ *   [1]=>
+ *   string(1) "a"
+ *   [2]=>
+ *   NULL
+ *   [3]=>
+ *   string(1) "c"
+ * }
+ * </pre>
+ * </blockquote>
+ * @param $offset [optional] <p>
+ * Normally, the search starts from the beginning of the subject string.
+ * The optional parameter <i>offset</i> can be used to
+ * specify the alternate place from which to start the search (in bytes).
+ * </p>
+ * <p>
+ * Using <i>offset</i> is not equivalent to passing
+ * substr($subject, $offset) to
+ * <b>preg_match</b> in place of the subject string,
+ * because <i>pattern</i> can contain assertions such as
+ * ^, $ or
+ * (?&lt;=x). Compare:
+ * <pre>
+ * <code>
+ * $subject = "abcdef";
+ * $pattern = '/^def/';
+ * preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE, 3);
+ * print_r($matches);
+ * </code>
+ * </pre>
+ * The above example will output:</p>
+ * <pre>
+ * Array
+ * (
+ * )
+ * </pre>
+ * <p>
+ * while this example
+ * </p>
+ * <pre>
+ * <code>
+ * $subject = "abcdef";
+ * $pattern = '/^def/';
+ * preg_match($pattern, substr($subject,3), $matches, PREG_OFFSET_CAPTURE);
+ * print_r($matches);
+ * </code>
+ * </pre>
+ * <p>
+ * will produce
+ * </p>
+ * <pre>
+ * Array
+ * (
+ *     [0] => Array
+ *         (
+ *             [0] => def
+ *             [1] => 0
+ *         )
+ * )
+ * </pre>
+ * Alternatively, to avoid using substr(), use the \G assertion rather
+ * than the ^ anchor, or the A modifier instead, both of which work with
+ * the offset parameter.
+ * </p>
+ * @return 0|1 <b>preg_match</b> returns 1 if the <i>pattern</i>
+ * matches given <i>subject</i>, 0 if it does not.
+ * @throws PcreException if an error occurred.
+ */
+function preg_match(string $pattern, string $subject, &$matches, int $flags = 0, int $offset = 0): int
+{
+    \error_clear_last();
+    // @phpstan-ignore paramOut.type
+    $safeResult = \preg_match($pattern, $subject, $matches, $flags, $offset);
+    if ($safeResult === false) {
+        throw PcreException::createFromPhpError();
+    }
+    return $safeResult;
+}
+
+/**
  * Searches subject for matches to
  * pattern and replaces them with
  * replacement.
@@ -76,7 +244,6 @@ namespace gldstdlib\safe;
  * returned unchanged.
  *
  * @throws PcreException
- *
  */
 function preg_replace(  // @phpstan-ignore parameterByRef.unusedType
     array|string $pattern,

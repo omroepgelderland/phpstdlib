@@ -12,7 +12,6 @@ namespace gldstdlib\safe;
  * @return string Returns the content type in MIME format, like
  * text/plain or application/octet-stream.
  * @throws FileinfoException
- *
  */
 function mime_content_type($filename): string
 {

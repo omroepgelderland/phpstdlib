@@ -28,11 +28,10 @@ namespace gldstdlib\safe;
  * @param $string The string to be converted.
  * @return string Returns the converted string.
  * @throws IconvException
- *
  */
 function iconv(string $from_encoding, string $to_encoding, string $string): string
 {
-    error_clear_last();
+    \error_clear_last();
     $safeResult = \iconv($from_encoding, $to_encoding, $string);
     if ($safeResult === false) {
         throw IconvException::createFromPhpError();
