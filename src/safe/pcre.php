@@ -161,7 +161,7 @@ namespace gldstdlib\safe;
  * matches given <i>subject</i>, 0 if it does not.
  * @throws PcreException if an error occurred.
  */
-function preg_match(string $pattern, string $subject, &$matches, int $flags = 0, int $offset = 0): int
+function preg_match(string $pattern, string $subject, &$matches = [], int $flags = 0, int $offset = 0): int
 {
     \error_clear_last();
     // @phpstan-ignore paramOut.type
@@ -169,6 +169,7 @@ function preg_match(string $pattern, string $subject, &$matches, int $flags = 0,
     if ($safeResult === false) {
         throw PcreException::createFromPhpError();
     }
+    preg_match($pattern, $subject, $m);
     return $safeResult;
 }
 
