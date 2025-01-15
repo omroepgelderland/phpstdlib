@@ -10,6 +10,7 @@ use gldstdlib\exception\GLDException;
  * Iterator voor het maken van objecten uit ID’s uit de database.
  *
  * @template T of object
+ *
  * @implements \Iterator<int, T>
  */
 class DBObjectIterator implements \Iterator

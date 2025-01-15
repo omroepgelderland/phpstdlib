@@ -6,6 +6,7 @@ namespace gldstdlib;
 
 /**
  * Houdt de voortgang van een S3 multipart upload bij.
+ *
  * @phpstan-type Callback callable(int, int): void
  */
 class S3MultipartProgress
@@ -30,6 +31,7 @@ class S3MultipartProgress
 
     /**
      * Geef deze functie als parameter voor before_upload.
+     *
      * @param \Aws\Command<string, mixed> $command
      * @param $chunk_number
      */

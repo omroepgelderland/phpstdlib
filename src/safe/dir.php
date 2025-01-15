@@ -17,7 +17,9 @@ namespace gldstdlib\safe;
  * @param resource|null $context For a description of the context parameter,
  * refer to the streams section of
  * the manual.
+ *
  * @return list<string> Returns an array of filenames.
+ *
  * @throws DirException If directory is not a directory.
  */
 function scandir(string $directory, int $sorting_order = \SCANDIR_SORT_ASCENDING, $context = null): array

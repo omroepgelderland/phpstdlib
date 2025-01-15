@@ -26,7 +26,9 @@ namespace gldstdlib\safe;
  * so the conversion is likely to fail for characters which are illegal for
  * the to_encoding.
  * @param $string The string to be converted.
+ *
  * @return string Returns the converted string.
+ *
  * @throws IconvException
  */
 function iconv(string $from_encoding, string $to_encoding, string $string): string

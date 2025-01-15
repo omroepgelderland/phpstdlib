@@ -16,7 +16,9 @@ namespace gldstdlib\safe;
  * If omitted, the default value is 90 seconds. The timeout can be changed and
  * queried at any time with ftp_set_option and
  * ftp_get_option.
+ *
  * @return \FTP\Connection Returns an FTP\Connection instance.
+ *
  * @throws FtpException
  */
 function ftp_connect(string $hostname, int $port = 21, int $timeout = 90): \FTP\Connection
@@ -46,7 +48,9 @@ function ftp_connect(string $hostname, int $port = 21, int $timeout = 90): \FTP\
  * If omitted, the default value is 90 seconds. The timeout can be changed and
  * queried at any time with ftp_set_option and
  * ftp_get_option.
+ *
  * @return \FTP\Connection Returns an FTP\Connection instance.
+ *
  * @throws FtpException
  */
 function ftp_ssl_connect(string $hostname, int $port = 21, int $timeout = 90): \FTP\Connection

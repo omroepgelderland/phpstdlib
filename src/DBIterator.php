@@ -13,6 +13,7 @@ use function gldstdlib\safe\json_decode;
  * Iterator voor het maken van objecten uit ID’s uit de database.
  *
  * @template T of 'int'|'string'|'bool'|'float'|'json'
+ *
  * @implements \Iterator<int, T>
  */
 class DBIterator implements \Iterator

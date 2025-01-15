@@ -7,6 +7,8 @@ namespace gldstdlib\safe;
 /**
  * Wrapper for json_decode that throws when an error occurs.
  *
+ * @link http://www.php.net/manual/en/function.json-decode.php
+ *
  * @param $json    JSON data to parse
  * @param $associative     When true, returned objects will be converted
  *                        into associative arrays.
@@ -14,8 +16,8 @@ namespace gldstdlib\safe;
  * @param $flags Bitmask of JSON decode options.
  *
  * @return mixed
+ *
  * @throws JsonException if the JSON cannot be decoded.
- * @link http://www.php.net/manual/en/function.json-decode.php
  */
 function json_decode(
     string $json,
@@ -70,7 +72,9 @@ function json_decode(
  * The behaviour of these constants is described on the
  * JSON constants page.
  * @param int<1, max> $depth Set the maximum depth. Must be greater than zero.
+ *
  * @return string Returns a JSON encoded string on success.
+ *
  * @throws JsonException
  */
 function json_encode(

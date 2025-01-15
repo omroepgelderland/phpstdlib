@@ -6,12 +6,15 @@ namespace gldstdlib\safe;
 
 /**
  * Bind to LDAP directory
+ *
  * @link https://php.net/manual/en/function.ldap-bind.php
+ *
  * @param $ldap <p>
  * An LDAP link identifier, returned by <b>ldap_connect</b>.
  * </p>
  * @param $dn [optional]
  * @param $password [optional]
+ *
  * @throws LdapException on failure.
  */
 function ldap_bind(\LDAP\Connection $ldap, ?string $dn, ?string $password): void
@@ -31,7 +34,9 @@ function ldap_bind(\LDAP\Connection $ldap, ?string $dn, ?string $password): void
 
 /**
  * Get the current value for given option
+ *
  * @link https://php.net/manual/en/function.ldap-get-option.php
+ *
  * @param $ldap <p>
  * An LDAP link identifier, returned by <b>ldap_connect</b>.
  * </p>
@@ -97,6 +102,7 @@ function ldap_bind(\LDAP\Connection $ldap, ?string $dn, ?string $password): void
  * @param &$value <p>
  * This will be set to the option value.
  * </p>
+ *
  * @throws LdapException on failure.
  */
 function ldap_get_option(
@@ -113,7 +119,9 @@ function ldap_get_option(
 
 /**
  * Set the value of the given option
+ *
  * @link https://php.net/manual/en/function.ldap-set-option.php
+ *
  * @param $ldap <p>
  * An LDAP link identifier, returned by <b>ldap_connect</b>.
  * </p>
@@ -208,6 +216,7 @@ function ldap_get_option(
  * @param array<mixed>|bool|int|string $value <p>
  * The new value for the specified <i>option</i>.
  * </p>
+ *
  * @throws LdapException on failure.
  */
 function ldap_set_option(
@@ -226,7 +235,9 @@ function ldap_set_option(
 
 /**
  * Search LDAP tree
+ *
  * @link https://php.net/manual/en/function.ldap-search.php
+ *
  * @param $ldap <p>
  * An LDAP link identifier, returned by <b>ldap_connect</b>.
  * </p>
@@ -282,7 +293,9 @@ function ldap_set_option(
  * <b>LDAP_DEREF_NEVER</b> - (default) aliases are never
  * dereferenced.</p>
  * @param ?string[] $controls Array of LDAP Controls to send with the request.
+ *
  * @return \LDAP\Result|\LDAP\Result[]
+ *
  * @throws LdapException
  */
 function ldap_search(
@@ -316,11 +329,14 @@ function ldap_search(
 
 /**
  * Get all result entries
+ *
  * @link https://php.net/manual/en/function.ldap-get-entries.php
+ *
  * @param $ldap <p>
  * An LDAP link identifier, returned by <b>ldap_connect</b>.
  * </p>
  * @param $result
+ *
  * @return array<mixed> a complete result information in a multi-dimensional array.
  * </p>
  * <p>
@@ -338,6 +354,7 @@ function ldap_search(
  * attribute in ith entry
  * return_value[i]["attribute"][j] = jth value of attribute in ith entry
  * </pre>
+ *
  * @throws LdapException
  */
 function ldap_get_entries(

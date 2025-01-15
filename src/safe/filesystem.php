@@ -34,9 +34,10 @@ namespace gldstdlib\safe;
  * @param int<0, max> $length Maximum length of data read. The default is to read until end
  * of file is reached. Note that this parameter is applied to the
  * stream processed by the filters.
- * @return string The function returns the read data.
- * @throws FilesystemException
  *
+ * @return string The function returns the read data.
+ *
+ * @throws FilesystemException
  */
 function file_get_contents(
     string $filename,
@@ -60,7 +61,6 @@ function file_get_contents(
     }
     return $safeResult;
 }
-
 
 /**
  * This function is identical to calling fopen,
@@ -126,13 +126,11 @@ function file_get_contents(
  * fwrite call. This is not identical to an
  * fopen call with mode "x".
  *
- *
- *
- *
- *
  * @param resource|null $context A valid context resource created with
  * stream_context_create.
+ *
  * @return int This function returns the number of bytes that were written to the file.
+ *
  * @throws FilesystemException
  */
 function file_put_contents(
@@ -157,8 +155,11 @@ function file_put_contents(
  * Gets the size for the given file.
  *
  * @param $filename Path to the file.
+ *
  * @return int Returns the size of the file in bytes.
+ *
  * @throws FilesystemException in case of an error
+ *
  * @phpstan-impure
  */
 function filesize(string $filename): int

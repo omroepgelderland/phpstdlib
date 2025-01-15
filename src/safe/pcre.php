@@ -6,7 +6,9 @@ namespace gldstdlib\safe;
 
 /**
  * Perform a regular expression match
+ *
  * @link https://php.net/manual/en/function.preg-match.php
+ *
  * @param $pattern <p>
  * The pattern to search for, as a string.
  * </p>
@@ -157,8 +159,10 @@ namespace gldstdlib\safe;
  * than the ^ anchor, or the A modifier instead, both of which work with
  * the offset parameter.
  * </p>
+ *
  * @return 0|1 <b>preg_match</b> returns 1 if the <i>pattern</i>
  * matches given <i>subject</i>, 0 if it does not.
+ *
  * @throws PcreException if an error occurred.
  */
 function preg_match(string $pattern, string $subject, &$matches = [], int $flags = 0, int $offset = 0): int
@@ -180,7 +184,6 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  *
  * @param string[]|string $pattern The pattern to search for. It can be either a string or an array with
  * strings.
- *
  * Several PCRE modifiers
  * are also available.
  * @param string[]|string $replacement The string or an array with strings to replace. If this parameter is a
@@ -227,7 +230,6 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  * aware of PHP's string
  * syntax to know exactly how the interpreted string will look.
  * @param string[]|string $subject The string or an array with strings to search and replace.
- *
  * If subject is an array, then the search and
  * replace is performed on every entry of subject,
  * and the return value is an array as well.
@@ -236,10 +238,10 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  * -1 (no limit).
  * @param $count If specified, this variable will be filled with the number of
  * replacements done.
+ *
  * @return ($subject is string ? string : string[]) preg_replace returns an array if the
  * subject parameter is an array, or a string
  * otherwise.
- *
  * If matches are found, the new subject will
  * be returned, otherwise subject will be
  * returned unchanged.

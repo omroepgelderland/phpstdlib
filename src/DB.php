@@ -16,6 +16,7 @@ use Medoo\Medoo;
 
 /**
  * Abstractielaag voor de database.
+ *
  * @phpstan-type ParamsType array{
  *     host: string,
  *     database: string,
@@ -54,6 +55,7 @@ class DB
 
     /**
      * Geeft het Medoo database-object.
+     *
      * @throws \PDOException
      */
     public function get_db(): Medoo
@@ -89,6 +91,7 @@ class DB
 
     /**
      * Zet MySQLi autocommit uit.
+     *
      * @throws \PDOException Als autocommit niet uitgezet kan worden.
      */
     public function begin_transaction(): void
@@ -100,6 +103,7 @@ class DB
 
     /**
      * Voer een commit uit.
+     *
      * @throws \PDOException Als de commit is mislukt.
      */
     public function commit(): void
@@ -120,6 +124,7 @@ class DB
 
     /**
      * Voert een MySQLi rollback uit.
+     *
      * @throws \PDOException Als de rollback is mislukt.
      */
     public function rollback(): void
@@ -131,7 +136,9 @@ class DB
 
     /**
      * Zet speciale tekens om en voorkomt SQL injectie
+     *
      * @param $str Waarde die omgezet moet worden
+     *
      * @return string Omgezette string
      */
     public function escape_string(string $str): string
@@ -141,9 +148,11 @@ class DB
 
     /**
      * Voert een raw MySQL statement uit.
+     *
      * @param $statement The raw SQL statement.
      * @param array<string, mixed> $map The array of input parameters value for
      * prepared statement.
+     *
      * @throws \PDOException Als de query mislukt.
      */
     public function query(string $statement, array $map = []): \PDOStatement
@@ -162,6 +171,7 @@ class DB
      * @param string|list<string> $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
+     *
      * @return string Query.
      */
     private function get_select_query(
@@ -191,6 +201,7 @@ class DB
      * @param string|list<string> $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
+     *
      * @return array<array<mixed>>
      */
     private function execute_select_query(
@@ -220,11 +231,13 @@ class DB
      * Geef de eerste kolom van de eerste rij van het resultaat van een SQL-
      * query terug. Er wordt een SQLGeenResultaat gegeven als er geen resultaat
      * is.
+     *
      * @param $table
      * @param $column
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
      * @param $nullable Of het resultaat null kan zijn.
+     *
      * @throws SQLNoResultException Als er geen resultaat is.
      * @throws SQLException Als de query mislukt.
      * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
@@ -264,11 +277,13 @@ class DB
      * Geeft een iterator voor één kolom van het resultaat van een SQL query terug.
      *
      * @template T of 'int'|'string'|'bool'|'float'|'json'
+     *
      * @param T $type Type van het resultaat.
      * @param $table
      * @param $column
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
+     *
      * @return DBIterator<T> Resultaat.
      */
     public function select_column(
@@ -295,7 +310,9 @@ class DB
      * @param list<string>|string $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
+     *
      * @return array<mixed> Lijst.
+     *
      * @throws SQLNoResultException Als er geen resultaat is.
      */
     public function select_row(
@@ -343,6 +360,7 @@ class DB
      * @param list<string>|string $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
+     *
      * @return array<mixed>
      */
     public function select(
@@ -360,6 +378,7 @@ class DB
      * die overeenkomen met ID's van het gewenste objecttype.
      *
      * @template T of object
+     *
      * @param class-string<T> $object_type Naam van de class.
      * @param $table
      * @param $column
@@ -367,7 +386,9 @@ class DB
      * @param array<string, mixed> $join
      * @param ...$args Eventuele extra parameters (na de eerste) voor de constructor van
      * de class.
+     *
      * @return DBObjectIterator<T> Lijst.
+     *
      * @throws SQLNoResultException Als er geen resultaat is.
      * @throws SQLException Als de query mislukt.
      * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
@@ -399,6 +420,7 @@ class DB
      * class.
      *
      * @template T
+     *
      * @param class-string<T> $object_type Naam van de class.
      * @param $table
      * @param $column
@@ -406,7 +428,9 @@ class DB
      * @param array<string, mixed> $join
      * @param ...$args Eventuele extra parameters (na de eerste) voor de constructor van
      * de class.
+     *
      * @return T Resultaat object.
+     *
      * @throws SQLNoResultException Als er geen resultaat is.
      * @throws SQLException Als de query mislukt.
      * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
@@ -427,6 +451,7 @@ class DB
 
     /**
      * Geeft aan of een of meerdere databaserecords bestaan.
+     *
      * @param $table
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
@@ -449,7 +474,9 @@ class DB
      * @param $table Naam van de tabel waarin de data moet worden geplaatst.
      * @param array<string, mixed> $values Associatieve array met in te voeren
      * data.
+     *
      * @return int|string Het ID van de laatst ingevoegde rij.
+     *
      * @throws SQLException Als er niets is toegevoegd na uitvoering van de
      * query.
      */
@@ -485,6 +512,7 @@ class DB
      * @param $table Naam van de tabel waarin de data moet worden geplaatst.
      * @param array<string, mixed> $values Associatieve array met in te voeren
      * data.
+     *
      * @return int|string Het ID van de laatst ingevoegde rij.
      * @return DBInsertUpdateResultType Object met informatie over de uitgevoerde actie en het
      * resultaat.
@@ -521,12 +549,14 @@ class DB
      * Verander een aantal velden in de database aan de hand van een
      * associatieve array. PHP types worden naar SQL omgezet. Strings worden ge-
      * escaped
+     *
      * @param $table Naam van de tabel waar de data moet worden
      * aangepast.
      * @param array<string, mixed> $data Associatieve array met bij te werken
      * data.
      * @param array<string, mixed> $where Voorwaarden voor binnen het
      * WHERE-statement.
+     *
      * @return int Aantal veranderde rijen
      */
     public function update(
@@ -543,7 +573,9 @@ class DB
 
     /**
      * Genereert een foutmelding aan de hand van de foutinformatie uit PDO.
+     *
      * @param $msg Foutinformatie.
+     *
      * @throws SQLException
      */
     private function throw_exception_db(?string $msg = null): never
@@ -582,8 +614,10 @@ class DB
 
     /**
      * Genereert een specifieke foutmelding aan de hand van een tekst en code.
+     *
      * @param $msg
      * @param $errno
+     *
      * @throws SQLException
      */
     private function throw_exception(

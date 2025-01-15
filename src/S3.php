@@ -13,6 +13,7 @@ use function gldstdlib\safe\filesize;
 
 /**
  * Abstractielaag voor Amazon S3 Blue Billywig CDN.
+ *
  * @phpstan-type ConfigType object{
  *     version: string,
  *     region: string,
@@ -41,6 +42,7 @@ class S3
 
     /**
      * Maakt een API koppelingobject
+     *
      * @param ConfigType $config_data Configuratie
      */
     public function __construct(
@@ -78,6 +80,7 @@ class S3
 
     /**
      * Geeft het S3 clientobject
+     *
      * @return \Aws\S3\S3Client
      */
     private function get_client(): \Aws\S3\S3Client
@@ -86,7 +89,6 @@ class S3
     }
 
     /**
-     *
      * @return array{
      *     key: string,
      *     secret: string
@@ -131,6 +133,7 @@ class S3
      * 2. int tot nu toe geüploade bytes.
      * @param $progress_callback
      * @param $state Status van de eerder mislukte upload (alleen voor recursie)
+     *
      * @return \Aws\Result<string, mixed> Resultaatobject
      *
      * @throws FilesystemException Als het lokale bestand geen regulier bestand is.
@@ -242,6 +245,7 @@ class S3
 
     /**
      * Geeft de stream wrapper en zet streaming aan
+     *
      * @param $remote_pad Pad op het CDN
      */
     private function get_stream_wrapper(string $remote_pad): string
@@ -258,7 +262,9 @@ class S3
 
     /**
      * Geef de inhoud van een bestand als string
+     *
      * @param $remote_pad Pad op het CDN
+     *
      * @return string Data
      */
     public function get_contents(string $remote_pad): string
@@ -268,8 +274,10 @@ class S3
 
     /**
      * Zet de inhoud van een string in een bestand
+     *
      * @param $remote_pad Pad op het cdn
      * @param $data Data
+     *
      * @return int Het aantal geschreven bytes
      */
     public function put_contents(string $remote_pad, mixed $data): int
@@ -279,9 +287,11 @@ class S3
 
     /**
      * Download een bestand van het CDN naar een lokaal tijdelijk bestand.
+     *
      * @param $remote_pad Pad op het CDN
      * @param $prefix Eerste deel van de gegenereerde bestandsnaam.
      * Standaard 's3'.
+     *
      * @return string Pad naar het tijdelijke bestand.
      */
     public function download_tempbestand(string $remote_pad, string $prefix = 's3'): string
@@ -293,6 +303,7 @@ class S3
 
     /**
      * Geeft aan of een bestand bestaat op het CDN.
+     *
      * @param $remote_pad Pad op het CDN.
      */
     public function exists(string $remote_pad): bool
@@ -306,7 +317,9 @@ class S3
     /**
      * Verwijdert een object op het CDN.
      * Doet niets als het pad niet bestaat.
+     *
      * @param $remote_pad
+     *
      * @return \Aws\Result<string, mixed>
      */
     public function delete(string $remote_pad): \Aws\Result
@@ -320,7 +333,9 @@ class S3
     /**
      * Verwijdert een map recursief met alle inhoud op het CDN.
      * Doet niets als het pad niet bestaat.
+     *
      * @param $remote_pad
+     *
      * @throws \Aws\S3\Exception\DeleteMultipleObjectsException
      */
     public function batch_delete(string $remote_pad): void
@@ -335,9 +350,12 @@ class S3
     /**
      * Kopieer een bestand van een cdn-locatie naar een cdn-locatie.
      * Alleen voor bestanden, niet voor mappen.
+     *
      * @param $remote_src Bronpad op het CDN.
      * @param $remote_dst Doelpad op het CDN.
+     *
      * @return \Aws\Result<string, mixed>
+     *
      * @throws \Aws\S3\Exception\S3Exception
      * @throws \Aws\Exception\MultipartUploadException
      */
@@ -366,6 +384,7 @@ class S3
      * Bestanden in het doel die niet bestaan in de bron worden verwijderd.
      * Mappen worden genegeerd. Er worden mappen aangemaakt als daar bestanden
      * in staan die worden gekopieerd. Lege mappen worden niet verwijderd.
+     *
      * @param $remote_src Bronmap
      * @param $remote_dst Doelmap
      */

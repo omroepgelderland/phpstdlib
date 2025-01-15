@@ -139,6 +139,7 @@ class Log
 
     /**
      * Geeft het pad naar het logbestand.
+     *
      * @param $filename Optionale bestandsnaam voor logbestanden die afwijken
      * van de filename class property. (zonder extensie).
      */
@@ -156,6 +157,7 @@ class Log
 
     /**
      * Stelt een andere naam in.
+     *
      * @param $filename Bestandsnaam zonder extensie.
      */
     public function set_filename(string $filename): void

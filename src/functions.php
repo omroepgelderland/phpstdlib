@@ -32,6 +32,7 @@ use function gldstdlib\safe\scandir;
 
 /**
  * Recursively removes a directory.
+ *
  * @param $dir Directory path
  */
 function rrmdir(string $dir): void
@@ -53,7 +54,9 @@ function rrmdir(string $dir): void
 
 /**
  * Plakt paden aan elkaar met slashes.
+ *
  * @param ...$paths Meerdere paden die aan elkaar geplakt worden.
+ *
  * @return string Het resulterende pad.
  */
 function path_join(string ...$paths): string
@@ -75,7 +78,9 @@ function path_join(string ...$paths): string
 
 /**
  * Geeft de inhoud van een map en submappen
+ *
  * @param $path Map om te scannen
+ *
  * @return list<string>|string Array met de inhoud. Wanneer $path een bestand is wordt
  * een string met de bestandsnaam gegeven.
  */
@@ -128,9 +133,12 @@ function is_cron(): bool
  * Zet een tweecijferig jaartal om naar een van vier cijfers.
  * Dertig of hoger wordt gezien als twintigste eeuw, anders eenentwintigste
  * eeuw.
+ *
  * @param $jaar Invoerjaar
- * @throws GLDException Als $jaar niet tussen 0 en 99 is.
+ *
  * @return int Viercijferig jaartal
+ *
+ * @throws GLDException Als $jaar niet tussen 0 en 99 is.
  */
 function y2k(int $jaar): int
 {
@@ -150,8 +158,11 @@ function y2k(int $jaar): int
 /**
  * Geeft aan of een bestand door een ander proces geschreven wordt.
  * Dit is bedoeld voor bestanden die gekopiëerd of geüpload worden.
+ *
  * @param $pad Pad naar het bestand
+ *
  * @return bool True als het bestand niet groter of kleiner aan het worden is.
+ *
  * @throws \Exception Als het bestand niet bestaat of als de grootte ervan niet
  * kan worden bepaald.
  */
@@ -167,8 +178,10 @@ function is_bestand_klaar(string $pad): bool
 
 /**
  * Wacht tot een extern proces klaar is met kopiëren/uploaden van een bestand.
+ *
  * @param $pad Pad naar het bestand
  * @param $timeout Maximumtijd dat er gewacht wordt.
+ *
  * @throws \Exception Als het bestand niet bestaat of als de grootte ervan niet
  * kan worden bepaald.
  * @throws GLDException Als het wachten langer duurt dan $timeout
@@ -246,7 +259,9 @@ function exception_error_handler(
 /**
  * Zet een string om in een object.
  * Zet de nu ingestelde tijdzone in het object.
+ *
  * @param $in Invoer
+ *
  * @throws NullException Als de invoer leeg is.
  * @throws GLDException Als de invoer geen geldige datumtijd is.
  */
@@ -257,7 +272,7 @@ function parse_datetime(string $in): \DateTime
     }
     try {
         $dt = new \DateTime($in);
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         throw new GLDException($e->getMessage(), $e->getCode(), $e);
     }
     $dt->setTimezone(get_tijdzone());
@@ -266,6 +281,7 @@ function parse_datetime(string $in): \DateTime
 
 /**
  * Geeft de tijdzone van de server.
+ *
  * @return \DateTimeZone
  */
 function get_tijdzone(): \DateTimeZone
@@ -275,7 +291,9 @@ function get_tijdzone(): \DateTimeZone
 
 /**
  * Formateert een naam voor weergave in de URL.
+ *
  * @param $str Invoer.
+ *
  * @return string Uitvoer.
  */
 function maak_url_slug(string $str): string
@@ -289,6 +307,7 @@ function maak_url_slug(string $str): string
 
 /**
  * Genereert een willekeurige reeks tekens.
+ *
  * @param $tekens Regex-deel met de tekens die in de string voor mogen
  * komen.
  * @param int<1, max> $lengte Lengte van het resultaat.
@@ -311,7 +330,9 @@ function genereer_random_string(string $tekens, int $lengte, string $deel = ''):
 
 /**
  * Filtert een variabele en maakt er een int of float van als dat kan.
+ *
  * @param $invoer
+ *
  * @throws TypeException Als de waarde niet omgezet kan worden.
  */
 function filter_number(mixed $waarde): int|float
@@ -355,7 +376,9 @@ function filter_float(mixed $value): float
 
 /**
  * @template TKey
+ *
  * @param array<TKey, mixed> $array
+ *
  * @return array<TKey, int>
  */
 function filter_int_array(array $array): array
@@ -365,7 +388,9 @@ function filter_int_array(array $array): array
 
 /**
  * @template TKey
+ *
  * @param array<TKey, mixed> $array
+ *
  * @return array<TKey, bool>
  */
 function filter_bool_array(array $array): array
@@ -375,7 +400,9 @@ function filter_bool_array(array $array): array
 
 /**
  * @template TKey
+ *
  * @param array<TKey, mixed> $array
+ *
  * @return array<TKey, float>
  */
 function filter_float_array(array $array): array
@@ -385,6 +412,7 @@ function filter_float_array(array $array): array
 
 /**
  * Geeft een afgeronde leesbare tekstrepresentatie van een aantal bytes.
+ *
  * @param $bytes
  */
 function format_bytes_afgerond(int|float $bytes): string
@@ -447,6 +475,7 @@ function format_bytes_afgerond(int|float $bytes): string
  * @param $map
  * @param $max Geef niet meer dan dit aantal bestanden terug (standaard
  * zonder beperking)
+ *
  * @return list<string> Lijst met bestanden, volledig pad.
  */
 function ingest_scandir(Log $log, string $map, ?int $max = null): array
@@ -478,6 +507,7 @@ function ingest_scandir(Log $log, string $map, ?int $max = null): array
 
 /**
  * Formatteert een string volgens de locale-instelling.
+ *
  * @param $dt Datumtijd.
  * @param $pattern Patroon. Zie
  * https://unicode-org.github.io/icu/userguide/format_parse/datetime/
@@ -503,7 +533,9 @@ function strftime_intl(\DateTime $dt, string $pattern): string
 /**
  * Zet een mimetype om in een extensie.
  * https://stackoverflow.com/questions/16511021/convert-mime-type-to-file-extension-php
+ *
  * @param $mime
+ *
  * @throws GLDException Als het mimetype niet in de lijst staat.
  */
 function mime2ext(string $mime): string
@@ -706,6 +738,7 @@ function mime2ext(string $mime): string
  * Bepaalt de juiste extensie van een bestand aan de hand van het bestandstype.
  * Geeft de originele extensie uit de naam terug als het niet aan de hand van
  * het type kan worden bepaald.
+ *
  * @param $pad Pad naar het bestand.
  */
 function get_extensie_uit_type(string $pad): string
@@ -714,65 +747,6 @@ function get_extensie_uit_type(string $pad): string
         return mime2ext(mime_content_type($pad));
     } catch (GLDException $e) {
         return \pathinfo($pad, \PATHINFO_EXTENSION);
-    }
-}
-
-/**
- * Geeft aan dat er een exitsignaal uit het OS is ontvangen en slaat dit op.
- * @param $signo The signal being handled
- * @param $siginfo If operating systems supports siginfo_t structures,
- * this will be an array of signal information dependent on the signal.
- */
-function signal_handler(Log $log, int $signo, mixed $siginfo): void
-{
-    $log->info("Signaal {$signo} ontvangen.");
-    /** @var ?bool $global_exit */
-    global $global_exit;
-    $global_exit = true;
-}
-
-/**
- * Checkt of er een signaal is ontvangen dat het proces moet stoppen.
- * @return bool True als er een exitstatus is.
- */
-function check_exit(): bool
-{
-    /** @var ?bool $global_exit */
-    global $global_exit;
-    if (!isset($global_exit)) {
-        return false;
-    }
-    \pcntl_signal_dispatch();
-    return $global_exit;
-}
-
-/**
- * Stelt de signal handler in voor exitsignalen.
- * Dit zort ervoor dat het uitgevoerde script niet direct stopt bij een exit-
- * signaal. Het script moet dit dan zelf afhandelen.
- * Wordt gebruikt bij daemons.
- */
-function install_signal_handler(): void
-{
-    /** @var ?bool $global_exit */
-    global $global_exit;
-    $global_exit = false;
-    \pcntl_signal(\SIGHUP, signal_handler(...));
-    \pcntl_signal(\SIGTERM, signal_handler(...));
-    \pcntl_signal(\SIGINT, signal_handler(...));
-}
-
-/**
- * Sleepfunctie die onderbroken wordt wanneer er een exitstatus is.
- * @param $seconds Aantal seconden sleep.
- */
-function sleep_stop_bij_signaal(int $seconds): void
-{
-    for ($i = 0; $i < $seconds; $i++) {
-        if (check_exit()) {
-            return;
-        }
-        \sleep(1);
     }
 }
 
@@ -813,7 +787,9 @@ function float_null_val(?string $value): ?float
  * Als $args[0] null is wordt er geen object gemaakt maar null teruggegeven.
  *
  * @template T
+ *
  * @param class-string<T> $class_name
+ *
  * @return ?T
  */
 function obj_null_val(string $class_name, mixed ...$args)
@@ -835,7 +811,7 @@ function fclose_safe($stream = null): void
     if (isset($stream)) {
         try {
             \fclose($stream);
-        } catch (\Exception) {
+        } catch (\Throwable) {
         }
     }
 }
@@ -848,7 +824,7 @@ function unlink_safe(?string $filename = null): void
     if (isset($filename)) {
         try {
             \unlink($filename);
-        } catch (\Exception) {
+        } catch (\Throwable) {
         }
     }
 }
