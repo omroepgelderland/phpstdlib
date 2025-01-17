@@ -832,16 +832,38 @@ function unlink_safe(?string $filename = null): void
 /**
  * Voert \readline() uit maar geeft een default terug als de gebruikersinvoer
  * leeg is.
+ *
+ * @param $prompt Prompt aan de gebruiker
+ * @param $default Antwoord als er niets wordt ingevuld.
+ * @param $mag_leeg Bij false wordt een error gegenereerd als de invoer leeg is.
+ *
+ * @return string Antwoord.
+ *
+ * @throws GLDException Als de gebruikersinvoer leeg is, $mag_leeg false is en
+ * $default leeg is.
  */
-function readline_met_default(string $prompt, string $default): string
-{
-    echo "{$prompt} [{$default}]:\n";
-    $respons = \readline();
-    if ($respons === '' || $respons === false) {
-        return $default;
+function readline_met_default(
+    string $prompt,
+    string $default = '',
+    bool $mag_leeg = true
+): string {
+    if ($default !== '') {
+        $prompt = "{$prompt} [{$default}]: ";
     } else {
-        return $respons;
+        $prompt = "{$prompt}: ";
     }
+    $ans = \readline($prompt);
+    if ($ans === false) {
+        $ans = '';
+    }
+    $ans = \trim($ans);
+    if ($ans === '') {
+        $ans = $default;
+    }
+    if ($ans === '' && !$mag_leeg) {
+        throw new GLDException('De invoer mag niet leeg zijn.');
+    }
+    return $ans;
 }
 
 /**
