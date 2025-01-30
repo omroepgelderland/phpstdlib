@@ -173,7 +173,6 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
     if ($safeResult === false) {
         throw PcreException::createFromPhpError();
     }
-    preg_match($pattern, $subject, $m);
     return $safeResult;
 }
 
