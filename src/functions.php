@@ -11,17 +11,20 @@ use gldstdlib\exception\CoreWarningErrorException;
 use gldstdlib\exception\DeprecatedErrorException;
 use gldstdlib\exception\ErrorErrorException;
 use gldstdlib\exception\GLDException;
+use gldstdlib\exception\IndexException;
 use gldstdlib\exception\NoticeErrorException;
 use gldstdlib\exception\NullException;
 use gldstdlib\exception\ParseErrorException;
 use gldstdlib\exception\RecoverableErrorException;
 use gldstdlib\exception\StrictErrorException;
 use gldstdlib\exception\TypeException;
+use gldstdlib\exception\UndefinedPropertyException;
 use gldstdlib\exception\UserDeprecatedErrorException;
 use gldstdlib\exception\UserErrorException;
 use gldstdlib\exception\UserNoticeErrorException;
 use gldstdlib\exception\UserWarningErrorException;
 use gldstdlib\exception\WarningErrorException;
+use gldstdlib\safe\FilesystemException;
 use gldstdlib\safe\SafeException;
 
 use function gldstdlib\safe\curl_exec;
@@ -260,6 +263,50 @@ function exception_error_handler(
             throw new UserDeprecatedErrorException($errstr, 0, $errno, $errfile, $errline);
         default:
             throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
+}
+
+
+/**
+ * Wrapper voor exception_error_handler() met aparte exceptions voor
+ * indexerrors, undefined properties en niet gevonden bestanden.
+ */
+function exception_error_handler_plus(
+    int $errno,
+    string $errstr,
+    string $errfile,
+    int $errline,
+): bool {
+    try {
+        return exception_error_handler(
+            $errno,
+            $errstr,
+            $errfile,
+            $errline,
+        );
+    } catch (WarningErrorException $e) {
+        if (\str_contains($errstr, 'No such file or directory')) {
+            throw new FilesystemException($errstr, 0, $errno, $errfile, $errline);
+        } elseif (\str_starts_with($e->getMessage(), 'Undefined array key')) {
+            throw new IndexException($e->getMessage(), 0, $errno, $errfile, $errline);
+        } elseif (\str_starts_with($e->getMessage(), 'Undefined property: ')) {
+            throw new UndefinedPropertyException($e->getMessage(), 0, $errno, $errfile, $errline);
+        } else {
+            throw $e;
+        }
+    } catch (NoticeErrorException $e) {
+        if (
+            \str_starts_with($e->getMessage(), 'Undefined index: ')
+            || \str_starts_with($e->getMessage(), 'Undefined offset: ')
+        ) {
+            throw new IndexException($e->getMessage(), 0, $errno, $errfile, $errline);
+        } elseif (\str_starts_with($e->getMessage(), 'Trying to get property ')) {
+            throw new UndefinedPropertyException($e->getMessage(), 0, $errno, $errfile, $errline);
+        } elseif (\str_starts_with($e->getMessage(), 'Undefined property: ')) {
+            throw new UndefinedPropertyException($e->getMessage(), 0, $errno, $errfile, $errline);
+        } else {
+            throw $e;
+        }
     }
 }
 

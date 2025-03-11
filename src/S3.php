@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace gldstdlib;
 
 use gldstdlib\exception\EmptyFileException;
-use gldstdlib\exception\FilesystemException;
+use gldstdlib\safe\FilesystemException;
 
 use function gldstdlib\safe\file_get_contents;
 use function gldstdlib\safe\file_put_contents;
