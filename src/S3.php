@@ -31,13 +31,21 @@ class S3
 
     private \Aws\Sdk $sdk;
     private \Aws\S3\S3Client $sdk_s3;
-    private string $version;
-    private string $region;
-    private string $access_key_id;
-    private string $secret_access_key;
-    private string $bucket_naam;
-    private string $media_root;
-    private string $url_root;
+    private readonly string $version;
+    private readonly string $region;
+    private readonly string $access_key_id;
+    private readonly string $secret_access_key;
+    private readonly string $bucket_naam;
+
+    /**
+     * Het basispad op het CDN waar de media staat.
+     */
+    public readonly string $media_root;
+
+    /**
+     * De publieke basis-URL voor media op het CDN.
+     */
+    public readonly string $url_root;
     private bool $is_stream_wrapper_registered;
 
     /**
@@ -60,13 +68,6 @@ class S3
     }
 
     /**
-     * Singleton classes kunnen niet worden gekloond.
-     */
-    private function __clone()
-    {
-    }
-
-    /**
      * Geeft het SDK object.
      */
     private function get_sdk(): \Aws\Sdk
@@ -79,7 +80,7 @@ class S3
     }
 
     /**
-     * Geeft het S3 clientobject
+     * Geeft het S3 clientobject.
      *
      * @return \Aws\S3\S3Client
      */
@@ -103,19 +104,27 @@ class S3
     }
 
     /**
-     * Geeft het basispad op het CDN waar de media staat.
-     */
-    public function get_media_root(): string
-    {
-        return $this->media_root;
-    }
-
-    /**
-     * Geeft de publieke basis-URL voor media op het CDN.
+     * Geeft de publieke basis-URL van de projectmap voor media op het CDN.
      */
     public function get_url_root(): string
     {
-        return $this->url_root;
+        return path_join($this->url_root, $this->media_root);
+    }
+
+    /**
+     * Geeft de publieke URL naar een locatie op het CDN.
+     *
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
+     *
+     * @return string Publieke URL.
+     */
+    public function get_url(string $remote_pad): string
+    {
+        return path_join(
+            $this->url_root,
+            $this->get_volledig_pad($remote_pad)
+        );
     }
 
     /**
@@ -123,11 +132,13 @@ class S3
      *
      * @param $lokaal_pad Lokaal bronbestand. Dit moet een regulier bestand
      * zijn.
-     * @param $remote_pad Pad op het CDN
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
      * @param $is_publiek
      * @param $content_type
      * @param $pogingen Aantal keer dat de upload herhaald wordt bij fouten.
-     * @param ?callable(int, int): void $progress_callback Callbackfunctie (optioneel)
+     * @param ?callable(int, int): void $progress_callback Callbackfunctie
+     * (optioneel)
      * Callback parameters:
      * 1. int totaal aantal bytes
      * 2. int tot nu toe geüploade bytes.
@@ -136,7 +147,8 @@ class S3
      *
      * @return \Aws\Result<string, mixed> Resultaatobject
      *
-     * @throws FilesystemException Als het lokale bestand geen regulier bestand is.
+     * @throws FilesystemException Als het lokale bestand geen regulier bestand
+     * is.
      * @throws EmptyFileException Als het lokale bestand leeg is.
      * @throws \Exception Bij uploadfouten
      */
@@ -149,6 +161,7 @@ class S3
         ?callable $progress_callback = null,
         \Aws\Multipart\UploadState|null $state = null
     ): \Aws\Result {
+        $volledig_remote_pad = $this->get_volledig_pad($remote_pad);
         if (!\is_file($lokaal_pad)) {
             throw new FilesystemException(
                 "\"{$lokaal_pad}\" kan niet worden herkend als regulier bestand"
@@ -171,7 +184,7 @@ class S3
         }
         $parameters = [
             'bucket' => $this->bucket_naam,
-            'key' => $remote_pad,
+            'key' => $volledig_remote_pad,
             'acl' => $acl,
             'before_upload' => fn(\Aws\Command $command) => \gc_collect_cycles(),
             'params' => $sub_params,
@@ -198,7 +211,7 @@ class S3
                 $this->log->notice(
                     'S3::upload("%s", "%s") mislukt. Doe nog een poging.',
                     $lokaal_pad,
-                    $remote_pad
+                    $volledig_remote_pad
                 );
                 return $this->upload(
                     $lokaal_pad,
@@ -216,7 +229,8 @@ class S3
     /**
      * Download een bestand.
      *
-     * @param $remote_pad Pad op het CDN
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
      * @param $lokaal_pad Lokaal doelbestand.
      * @param $overschrijven Of het lokale bestand mag worden overschreven
      * (standaard true)
@@ -238,7 +252,7 @@ class S3
         }
         return $this->get_client()->getObject([
             'Bucket' => $this->bucket_naam,
-            'Key' => $remote_pad,
+            'Key' => $this->get_volledig_pad($remote_pad),
             'SaveAs' => $lokaal_pad,
         ]);
     }
@@ -246,7 +260,8 @@ class S3
     /**
      * Geeft de stream wrapper en zet streaming aan
      *
-     * @param $remote_pad Pad op het CDN
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
      */
     private function get_stream_wrapper(string $remote_pad): string
     {
@@ -256,7 +271,7 @@ class S3
         return \sprintf(
             's3://%s/%s',
             $this->bucket_naam,
-            $remote_pad
+            $this->get_volledig_pad($remote_pad)
         );
     }
 
@@ -273,7 +288,7 @@ class S3
     }
 
     /**
-     * Zet de inhoud van een string in een bestand
+     * Zet de inhoud van een string in een bestand.
      *
      * @param $remote_pad Pad op het cdn
      * @param $data Data
@@ -304,13 +319,14 @@ class S3
     /**
      * Geeft aan of een bestand bestaat op het CDN.
      *
-     * @param $remote_pad Pad op het CDN.
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
      */
     public function exists(string $remote_pad): bool
     {
         return $this->get_client()->doesObjectExist(
             $this->bucket_naam,
-            $remote_pad
+            $this->get_volledig_pad($remote_pad)
         );
     }
 
@@ -318,7 +334,8 @@ class S3
      * Verwijdert een object op het CDN.
      * Doet niets als het pad niet bestaat.
      *
-     * @param $remote_pad
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
      *
      * @return \Aws\Result<string, mixed>
      */
@@ -326,7 +343,7 @@ class S3
     {
         return $this->get_client()->deleteObject([
             'Bucket' => $this->bucket_naam,
-            'Key' => $remote_pad,
+            'Key' => $this->get_volledig_pad($remote_pad),
         ]);
     }
 
@@ -334,7 +351,8 @@ class S3
      * Verwijdert een map recursief met alle inhoud op het CDN.
      * Doet niets als het pad niet bestaat.
      *
-     * @param $remote_pad
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een bsoluut pad,
+     * zonder slash voor relatief aan de projectmap.
      *
      * @throws \Aws\S3\Exception\DeleteMultipleObjectsException
      */
@@ -342,7 +360,7 @@ class S3
     {
         $delete = \Aws\S3\BatchDelete::fromListObjects($this->get_client(), [
             'Bucket' => $this->bucket_naam,
-            'Prefix' => $remote_pad,
+            'Prefix' => $this->get_volledig_pad($remote_pad),
         ]);
         $delete->delete();
     }
@@ -365,11 +383,11 @@ class S3
             $this->get_client(),
             [
                 'Bucket' => $this->bucket_naam,
-                'Key' => $remote_src,
+                'Key' => $this->get_volledig_pad($remote_src),
             ],
             [
                 'Bucket' => $this->bucket_naam,
-                'Key' => $remote_dst,
+                'Key' => $this->get_volledig_pad($remote_dst),
             ],
             self::ACL_PUBLIC
         );
@@ -378,10 +396,13 @@ class S3
 
     /**
      * Synchroniseert een map met een andere map op het CDN.
+     *
      * Alle bestanden uit de bron die nog niet bestaan in het doel worden ge-
      * kopieerd. Bestanden met dezelfde naam maar met een andere inhoud worden
      * overschreven.
+     *
      * Bestanden in het doel die niet bestaan in de bron worden verwijderd.
+     *
      * Mappen worden genegeerd. Er worden mappen aangemaakt als daar bestanden
      * in staan die worden gekopieerd. Lege mappen worden niet verwijderd.
      *
@@ -390,8 +411,8 @@ class S3
      */
     public function remote_sync(string $remote_src, string $remote_dst): void
     {
-        $remote_src = \rtrim($remote_src, '/') . '/';
-        $remote_dst = \rtrim($remote_dst, '/') . '/';
+        $remote_src = \rtrim($this->get_volledig_pad($remote_src), '/') . '/';
+        $remote_dst = \rtrim($this->get_volledig_pad($remote_dst), '/') . '/';
         // Lijst met bestanden src
         $src_lijst = $this->remote_sync_get_lijst($remote_src);
         // Lijst met bestanden dst
@@ -443,5 +464,39 @@ class S3
             }
         }
         return $lijst;
+    }
+
+    /**
+     * Hernoem of verplaatst een bestand op de cdn-locatie.
+     * Alleen voor bestanden, niet voor mappen.
+     * Paden: Begin met slash voor een absoluut pad, zonder slash voor relatief
+     * aan de projectmap.
+     *
+     * @param $oud_pad Pad.
+     * @param $nieuw_pad Pad.
+     */
+    public function remote_rename(string $oud_pad, string $nieuw_pad): void
+    {
+        \rename(
+            $this->get_stream_wrapper($oud_pad),
+            $this->get_stream_wrapper($nieuw_pad)
+        );
+    }
+
+    /**
+     * Geeft het volledige pad op het CDN.
+     *
+     * @param $pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
+     *
+     * @return string Volledig pad.
+     */
+    private function get_volledig_pad(string $pad): string
+    {
+        if (\str_starts_with($pad, '/')) {
+            return \ltrim($pad, '/');
+        } else {
+            return path_join($this->media_root, $pad);
+        }
     }
 }
