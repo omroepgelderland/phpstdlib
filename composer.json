@@ -17,6 +17,7 @@
 		},
 		"files": [
 			"src/functions.php",
+            "src/safe/curl.php",
             "src/safe/dir.php",
             "src/safe/fileinfo.php",
             "src/safe/filesystem.php",

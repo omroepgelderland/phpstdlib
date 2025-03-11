@@ -104,14 +104,6 @@ class S3
     }
 
     /**
-     * Geeft de publieke basis-URL van de projectmap voor media op het CDN.
-     */
-    public function get_url_root(): string
-    {
-        return path_join($this->url_root, $this->media_root);
-    }
-
-    /**
      * Geeft de publieke URL naar een locatie op het CDN.
      *
      * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
