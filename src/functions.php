@@ -24,10 +24,17 @@ use gldstdlib\exception\UserWarningErrorException;
 use gldstdlib\exception\WarningErrorException;
 use gldstdlib\safe\SafeException;
 
+use function gldstdlib\safe\curl_exec;
+use function gldstdlib\safe\curl_init;
+use function gldstdlib\safe\curl_setopt_array;
+use function gldstdlib\safe\fclose;
 use function gldstdlib\safe\filesize;
+use function gldstdlib\safe\fopen;
+use function gldstdlib\safe\fwrite;
 use function gldstdlib\safe\iconv;
 use function gldstdlib\safe\mime_content_type;
 use function gldstdlib\safe\preg_replace;
+use function gldstdlib\safe\rewind;
 use function gldstdlib\safe\scandir;
 
 /**
@@ -872,4 +879,77 @@ function readline_met_default(
 function get_running_script_path(): string
 {
     return get_included_files()[0];
+}
+
+/**
+ * Geeft het mimetype van een blob.
+ *
+ * @throws \gldstdlib\safe\FilesystemException
+ * @throws \gldstdlib\safe\FileinfoException
+ */
+function blob_mime_content_type(string $data): string
+{
+    $stream = fopen('php://temp', 'r+');
+    try {
+        fwrite($stream, $data);
+        rewind($stream);
+        return mime_content_type($stream);
+    } finally {
+        fclose($stream);
+    }
+}
+
+/**
+ * Trimfunctie die ook non-breaking spaces verwijdert.
+ *
+ * @throws \gldstdlib\safe\PcreException
+ */
+function ltrim_nbsp(string $string): string
+{
+    return preg_replace('~^[\s\x00]+~u', '', $string);
+}
+
+/**
+ * Trimfunctie die ook non-breaking spaces verwijdert.
+ *
+ * @throws \gldstdlib\safe\PcreException
+ */
+function rtrim_nbsp(string $string): string
+{
+    return preg_replace('~[\s\x00]+$~u', '', $string);
+}
+
+/**
+ * Trimfunctie die ook non-breaking spaces verwijdert.
+ *
+ * @throws \gldstdlib\safe\PcreException
+ */
+function trim_nbsp(string $string): string
+{
+    return preg_replace('~^[\s\x00]+|[\s\x00]+$~u', '', $string);
+}
+
+/**
+ * Geeft aan of een url bereikbaar is.
+ *
+ * @return bool True als de URL een HTTP ok status heeft, anders false.
+ */
+function url_bestaat(string $url): bool
+{
+    try {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            \CURLOPT_URL => $url,
+            \CURLOPT_HEADER => true,
+            \CURLOPT_NOBODY => true,
+            \CURLOPT_RETURNTRANSFER => true,
+            \CURLOPT_FOLLOWLOCATION => true,
+        ]);
+        curl_exec($ch);
+        $http_code = \curl_getinfo($ch)['http_code'];
+        \curl_close($ch);
+        return $http_code >= 200 && $http_code < 300;
+    } catch (\gldstdlib\safe\CurlException) {
+        return false;
+    }
 }
