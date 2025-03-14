@@ -40,7 +40,7 @@ function curl_exec(\CurlHandle $handle): ?string
  * curl_init.
  * @param int|null $option One of the CURLINFO_* constants.
  *
- * @return ($option is null ? mixed : array<string, mixed>) If option is given,
+ * @return ($option is null ? array<string, mixed> : mixed ) If option is given,
  * returns its value.
  * Otherwise, returns an associative array with the following elements
  * (which correspond to option):
