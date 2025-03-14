@@ -225,7 +225,7 @@ function filesize(string $filename): int
  * On the Windows platform, be careful to escape any backslashes
  * used in the path to the file, or use forward slashes.
  *
- * @param 'r'|'r+'|'w'|'w+'|'a'|'a+'|'x'|'x+'|'c'|'c+'|'e' $mode The mode
+ * @param $mode The mode
  * parameter specifies the type of access you require to the stream.
  * It may be any of the following:
  *
