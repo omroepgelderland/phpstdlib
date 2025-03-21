@@ -999,3 +999,20 @@ function url_bestaat(string $url): bool
         return false;
     }
 }
+
+/**
+ * Serializeert URL parameters als querystring en voegt die toe aan een URL.
+ *
+ * @param $url URL. Deze mag nog geen querystring bevatten.
+ * @param array<string, mixed> $url_params URL-parameters als associatieve
+ * array.
+ */
+function maak_url_met_querystring(string $url, array $url_params): string
+{
+    if (\count($url_params) === 0) {
+        return $url;
+    } else {
+        $querystring = \http_build_query($url_params, '', '&', \PHP_QUERY_RFC3986);
+        return "{$url}?{$querystring}";
+    }
+}

@@ -46,4 +46,21 @@ final class FunctionsTest extends TestCase
             path_join('p1/', '/p2')
         );
     }
+
+    public function test_maak_url_met_querystring(): void
+    {
+        $this->assertEquals(
+            'https://gld.nl?key0=1&key1=woord%20woord&key2=2.3',
+            maak_url_met_querystring('https://gld.nl', [
+                'key0' => true,
+                'key1' => 'woord woord',
+                'key2' => 2.3,
+                'nullkey' => null,
+            ])
+        );
+        $this->assertEquals(
+            'https://gld.nl',
+            maak_url_met_querystring('https://gld.nl', [])
+        );
+    }
 }
