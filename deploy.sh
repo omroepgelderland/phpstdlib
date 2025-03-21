@@ -16,7 +16,7 @@ if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
     fi
 fi
 
-oude_versie="$(git tag --list 'v*' --sort=v:refname | tail -n1)"
+oude_versie="$(git tag --list --sort=v:refname | grep -P '^\d+\.\d+\.\d+' | tail -n1)"
 echo "Versieverhoging? (major|minor|patch|premajor|preminor|prepatch|prerelease) "
 read -r versie_type
 nieuwe_versie="$(semver -i "$versie_type" "$oude_versie")"
