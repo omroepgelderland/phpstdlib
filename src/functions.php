@@ -266,7 +266,6 @@ function exception_error_handler(
     }
 }
 
-
 /**
  * Wrapper voor exception_error_handler() met aparte exceptions voor
  * indexerrors, undefined properties en niet gevonden bestanden.

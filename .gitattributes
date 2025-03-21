@@ -5,4 +5,5 @@
 /deploy.sh export-ignore
 /phpstan.dist.neon export-ignore
 /ruleset.xml export-ignore
+/testdata export-ignore
 /tests export-ignore
