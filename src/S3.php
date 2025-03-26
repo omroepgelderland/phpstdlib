@@ -14,7 +14,16 @@ use function gldstdlib\safe\filesize;
 /**
  * Abstractielaag voor Amazon S3 Blue Billywig CDN.
  *
- * @phpstan-type ConfigType object{
+ * @phpstan-type ConfigObjectType object{
+ *     version: string,
+ *     region: string,
+ *     access_key_id: string,
+ *     secret_access_key: string,
+ *     bucket_naam: string,
+ *     media_root: string,
+ *     url_root: string
+ * }
+ * @phpstan-type ConfigArrayType array{
  *     version: string,
  *     region: string,
  *     access_key_id: string,
@@ -51,12 +60,15 @@ class S3
     /**
      * Maakt een API koppelingobject
      *
-     * @param ConfigType $config_data Configuratie
+     * @param ConfigObjectType|ConfigArrayType $config_data Configuratie
      */
     public function __construct(
         private Log $log,
-        object $config_data,
+        object|array $config_data,
     ) {
+        if (\is_array($config_data)) {
+            $config_data = (object)$config_data;
+        }
         $this->version = $config_data->version;
         $this->region = $config_data->region;
         $this->access_key_id = $config_data->access_key_id;
@@ -255,7 +267,7 @@ class S3
      * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
      * zonder slash voor relatief aan de projectmap.
      */
-    private function get_stream_wrapper(string $remote_pad): string
+    public function get_stream_wrapper(string $remote_pad): string
     {
         if (!$this->is_stream_wrapper_registered) {
             $this->get_client()->registerStreamWrapper();
