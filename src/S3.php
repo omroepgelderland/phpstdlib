@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace gldstdlib;
 
 use gldstdlib\exception\EmptyFileException;
+use gldstdlib\exception\GLDException;
 use gldstdlib\safe\FilesystemException;
 
 use function gldstdlib\safe\file_get_contents;
@@ -501,6 +502,40 @@ class S3
             return \ltrim($pad, '/');
         } else {
             return path_join($this->media_root, $pad);
+        }
+    }
+
+    /**
+     * Geeft de metadata van een bestand op het CDN.
+     *
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
+     *
+     * @return \Aws\Result<string, mixed>
+     */
+    public function get_metadata(string $remote_pad): \Aws\Result
+    {
+        return $this->get_client()->headObject([
+            'Bucket' => $this->bucket_naam,
+            'Key' => $this->get_volledig_pad($remote_pad),
+        ]);
+    }
+
+    /**
+     * Geeft de grootte van een bestand op het CDN.
+     *
+     * @param $remote_pad Pad op het CDN. Begin met slash voor een absoluut pad,
+     * zonder slash voor relatief aan de projectmap.
+     *
+     * @throws GLDException
+     */
+    public function get_filesize(string $remote_pad): int
+    {
+        $res = $this->get_metadata($remote_pad)->get('ContentLength');
+        if (\is_int($res)) {
+            return $res;
+        } else {
+            throw new GLDException();
         }
     }
 }
