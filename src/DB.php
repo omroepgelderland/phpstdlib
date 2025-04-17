@@ -623,7 +623,7 @@ class DB
     private function throw_exception(
         string $msg = '',
         int $errno = 0,
-        \Throwable $previous = null,
+        ?\Throwable $previous = null,
     ): never {
         switch ($errno) {
             case self::ER_DUP_ENTRY:

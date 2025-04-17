@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace gldstdlib;
 
-use gldstdlib\exception\GLDException;
+use gldstdlib\exception\YourlsException;
+use gldstdlib\exception\YourlsTooManyRequestsException;
 
 /**
  * Communicatie met de short URL generator.
@@ -34,8 +35,8 @@ class Yourls
      *
      * @return string Short url
      *
-     * @throws GLDException Bij fouten in de Yourls API.
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws YourlsException
+     * @throws YourlsTooManyRequestsException
      */
     private function get_query(
         array $params,
@@ -54,8 +55,18 @@ class Yourls
                 $this->log?->notice("Yourls too many requests");
                 \sleep(10);
                 return $this->get_query($params, $pogingen - 1);
+            } elseif ($e->getCode() === 429) {
+                throw new YourlsTooManyRequestsException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e,
+                );
             } else {
-                throw $e;
+                throw new YourlsException(
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e,
+                );
             }
         }
         $response = $res->getBody()->getContents();
@@ -89,7 +100,7 @@ class Yourls
 
         // Errors
         if ($http_code === 400 && \property_exists($respons_data, 'message')) {
-            throw new GLDException($respons_data->message);
+            throw new YourlsException($respons_data->message);
         }
         if ($pogingen > 0) {
             \sleep(1);
@@ -97,7 +108,7 @@ class Yourls
         } elseif (isset($e)) {
             throw $e;
         } else {
-            throw new GLDException("{$http_code} {$response}", $http_code);
+            throw new YourlsException("{$http_code} {$response}", $http_code);
         }
     }
 
@@ -109,8 +120,8 @@ class Yourls
      *
      * @return string De verkorte URL
      *
-     * @throws GLDException Bij fouten in de Yourls API.
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws YourlsException
+     * @throws YourlsTooManyRequestsException
      */
     public function get_shorturl(string $url, array $url_params = []): string
     {
