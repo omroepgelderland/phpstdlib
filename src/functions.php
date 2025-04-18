@@ -1145,11 +1145,12 @@ function format_telefoonnummer(string $telefoonnummer): string
 }
 
 /**
- * Geeft het IP-adres van de indiener van een formulier
+ * Geeft het IP-adres van de indiener van een formulier.
  *
- * @throws GLDException
+ * @return ?string IP-adres. Dit kan ook een ipv6-adres zijn. Null als er geen
+ * adres kan worden gevonden.
  */
-function get_client_ip(): string
+function get_client_ip(): ?string
 {
     if (!empty($_SERVER['HTTP_CLIENT_IP']) && \is_string($_SERVER['HTTP_CLIENT_IP'])) {   //check ip from share internet
         return $_SERVER['HTTP_CLIENT_IP'];
@@ -1158,7 +1159,7 @@ function get_client_ip(): string
     } elseif (!empty($_SERVER['REMOTE_ADDR']) && \is_string($_SERVER['REMOTE_ADDR'])) {
         return $_SERVER['REMOTE_ADDR'];
     } else {
-        throw new GLDException("Geen IP-adres gevonden");
+        return null;
     }
 }
 
