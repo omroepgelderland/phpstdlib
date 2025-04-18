@@ -36,6 +36,7 @@ use function gldstdlib\safe\fopen;
 use function gldstdlib\safe\fwrite;
 use function gldstdlib\safe\iconv;
 use function gldstdlib\safe\mime_content_type;
+use function gldstdlib\safe\preg_match;
 use function gldstdlib\safe\preg_replace;
 use function gldstdlib\safe\rewind;
 use function gldstdlib\safe\scandir;
@@ -1015,4 +1016,163 @@ function maak_url_met_querystring(string $url, array $url_params): string
         $querystring = \http_build_query($url_params, '', '&', \PHP_QUERY_RFC3986);
         return "{$url}?{$querystring}";
     }
+}
+
+/**
+ * Haalt de inhoud van een webresource op als string.
+ *
+ * @param $url
+ * @param $timeout Maximale timeout (standaard 30)
+ *
+ * @throws \GuzzleHttp\Exception\GuzzleException
+ */
+function guzzle_get_contents(string $url, int $timeout = 30): string
+{
+    $client = new \GuzzleHttp\Client(
+        [
+            'timeout'  => $timeout,
+            'verify' => false,
+        ]
+    );
+    $response = $client->get($url);
+    return $response->getBody()->getContents();
+}
+
+/**
+ * Haalt de grootte op van een bestand op een URL.
+ *
+ * @param $url
+ * @param $timeout Maximale timeout (standaard 30)
+ *
+ * @return float Grootte in bytes.
+ *
+ * @throws \GuzzleHttp\Exception\GuzzleException
+ * @throws GLDException als de Content-Length header ontbreekt.
+ * @throws GLDException als de Content-Length header ongeldig is.
+ */
+function guzzle_get_size(string $url, int $timeout = 30): float
+{
+    $client = new \GuzzleHttp\Client(
+        [
+            'timeout'  => $timeout,
+            'verify' => false,
+        ]
+    );
+    $response = $client->head($url);
+    $lengths = $response->getHeader('Content-Length');
+    if (\count($lengths) === 0) {
+        throw new GLDException("Header Content-Length ontbreekt in {$url}");
+    }
+    $length = $lengths[0];
+    if (!\is_numeric($length)) {
+        throw new GLDException("Ongeldige Content-Length header in {$url}: {$length}");
+    }
+    return (float)$length;
+}
+
+/**
+ * Verwerkt een telefoonnummer zoals die door gebruikers kan worden aangeleverd.
+ *
+ * Leestekens worden weggefilterd.
+ *
+ * Lokale nummers worden internationaal gemaakt.
+ *
+ * Nederlands nummers worden gecheckt op geldige prefix en lengte.
+ *
+ * @param string $telefoonnummer Invoer.
+ *
+ * @return string Het geparste telefoonnummer.
+ *
+ * @throws GLDException Bij een ongeldig telefoonnummer.
+ */
+function parse_telefoonnummer(string $telefoonnummer): string
+{
+    if (\strlen($telefoonnummer) < 4) {
+        throw new GLDException("Ongeldig telefoonnummer: \"{$telefoonnummer}\"");
+    }
+    $telefoonnummer = preg_replace('~[^+0-9]~', '', $telefoonnummer);
+    if (\substr($telefoonnummer, 0, 2) === '00') {
+        // Handmatige uitbelcode
+        $telefoonnummer = '+' . \substr($telefoonnummer, 2);
+    }
+    if ($telefoonnummer[0] === '0') {
+        // Lokaal Nederlands nummer
+        $telefoonnummer = '+31' . \substr($telefoonnummer, 1);
+    }
+    if (\substr($telefoonnummer, 0, 4) === '+310') {
+        // Onnodige nul na landcode
+        $telefoonnummer = '+31' . \substr($telefoonnummer, 4);
+    }
+    if (\substr($telefoonnummer, 0, 3) === '+31') {
+        // Nederlands nummer
+        if (preg_match('~^\+31([1-5][0-9]|6[1-5]|68|7[0-9]|80|82|84|85|87|88|91)[0-9]{7}$~', $telefoonnummer) === 1) {
+            return $telefoonnummer;
+        } else {
+            throw  new GLDException("Ongeldig telefoonnummer: \"{$telefoonnummer}\"");
+        }
+    }
+    if (preg_match('~^\+[0-9]{8,15}$~', $telefoonnummer) === 1) {
+            // Internationaal nummer
+            return $telefoonnummer;
+    } else {
+        throw new GLDException("Ongeldig telefoonnummer: \"{$telefoonnummer}\"");
+    }
+}
+
+/**
+ * Plaatst (non breaking) spaties in een Nederlands internationaal telefoonnummer
+ * voor de leesbaarheid.
+ *
+ * @param $telefoonnummer Origineel telefoonnummer
+ */
+function format_telefoonnummer(string $telefoonnummer): string
+{
+    $patronen = [
+        // Viercijferige netnummers
+        '~^(\+31)((?:11|16|17|18|22|25|29|31|32|34|41|44|47|47|48|49|51|52|54|56|57|59|67|80|90)[0-9])([0-9]{2})([0-9]{2})([0-9]{2})$~',
+        // Eencijferige netnummers
+        '~^(\+31)(6)([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})$~',
+        // Tweecijferige netnummers
+        '~^(\+31)([0-9]{2})([0-9]{3})([0-9]{2})([0-9]{2})$~',
+    ];
+    foreach ($patronen as $patroon) {
+        if (preg_match($patroon, $telefoonnummer, $m)) {
+            array_shift($m);
+            return implode(' ', $m);
+        }
+    }
+    return $telefoonnummer;
+}
+
+/**
+ * Geeft het IP-adres van de indiener van een formulier
+ *
+ * @throws GLDException
+ */
+function get_client_ip(): string
+{
+    if (!empty($_SERVER['HTTP_CLIENT_IP']) && \is_string($_SERVER['HTTP_CLIENT_IP'])) {   //check ip from share internet
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) && \is_string($_SERVER['HTTP_X_FORWARDED_FOR'])) {   //to check ip is pass from proxy
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } elseif (!empty($_SERVER['REMOTE_ADDR']) && \is_string($_SERVER['REMOTE_ADDR'])) {
+        return $_SERVER['REMOTE_ADDR'];
+    } else {
+        throw new GLDException("Geen IP-adres gevonden");
+    }
+}
+
+/**
+ * Vervang voor Windows ongeldige tekens in bestandsnamen.
+ *
+ * Gebruik dit alleen voor basenames, niet voor volledige paden, want de slash
+ * wordt vervangen.
+ */
+function vervang_bestandsnaam_tekens(string $string): string
+{
+    return str_replace(
+        ['<', '>', ':', '"', '/', '\\', '|', '?', '*'],
+        ['﹤', '﹥', 'ː', '“', '⁄', '∖', '⼁', '﹖', '﹡'],
+        $string
+    );
 }
