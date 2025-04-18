@@ -562,21 +562,25 @@ function ingest_scandir(Log $log, string $map, ?int $max = null): array
 /**
  * Formatteert een string volgens de locale-instelling.
  *
+ * @see https://unicode-org.github.io/icu/userguide/format_parse/datetime/
+ *
  * @param $dt Datumtijd.
- * @param $pattern Patroon. Zie
- * https://unicode-org.github.io/icu/userguide/format_parse/datetime/
+ * @param $pattern Patroon.
+ * @param $dateType Datumnotatie (optioneel)
+ * @param $timeType Tijdnotatie (optioneel)
  */
-function strftime_intl(\DateTime $dt, string $pattern): string
-{
+function strftime_intl(
+    \DateTime $dt,
+    ?string $pattern = null,
+    int $dateType = \IntlDateFormatter::NONE,
+    int $timeType = \IntlDateFormatter::NONE,
+): string {
     $formatter = new \IntlDateFormatter(
         null,
-        \IntlDateFormatter::FULL,
-        \IntlDateFormatter::FULL,
-        null,
-        null,
-        $pattern
+        dateType: $dateType,
+        timeType: $timeType,
+        pattern: $pattern,
     );
-    $formatter->setPattern($pattern);
     $res = $formatter->format($dt);
     if ($res === false) {
         throw SafeException::createFromPhpError();
