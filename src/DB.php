@@ -182,13 +182,13 @@ class DB
     ): string {
         $dummy_db = $this->get_dummy_db();
         if (count($where) + count($join) === 0) {
-            // @phpstan-ignore arguments.count, argument.type
+            // @phpstan-ignore-next-line
             $dummy_db->select($table, $columns);
         } elseif (count($join) === 0) {
-            // @phpstan-ignore arguments.count, argument.type
+            // @phpstan-ignore-next-line
             $dummy_db->select($table, $columns, $where);
         } else {
-            // @phpstan-ignore arguments.count, argument.type
+            // @phpstan-ignore-next-line
             $dummy_db->select($table, $join, $columns, $where);
         }
         return $dummy_db->queryString;
@@ -211,13 +211,13 @@ class DB
         array $join = [],
     ): array {
         if (count($where) + count($join) === 0) {
-            // @phpstan-ignore arguments.count, argument.type
+            // @phpstan-ignore-next-line
             $res = $this->get_db()->select($table, $columns);
         } elseif (count($join) === 0) {
-            // @phpstan-ignore arguments.count, argument.type
+            // @phpstan-ignore-next-line
             $res = $this->get_db()->select($table, $columns, $where);
         } else {
-            // @phpstan-ignore arguments.count, argument.type
+            // @phpstan-ignore-next-line
             $res = $this->get_db()->select($table, $join, $columns, $where);
         }
         /** @var ?array<array<mixed>> $res */

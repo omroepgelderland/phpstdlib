@@ -126,9 +126,16 @@ class S3
      */
     public function get_url(string $remote_pad): string
     {
+        $url_pad = \implode(
+            '/',
+            \array_map(
+                fn($v) => \rawurlencode($v),
+                \explode('/', $this->get_volledig_pad($remote_pad))
+            )
+        );
         return path_join(
             $this->url_root,
-            $this->get_volledig_pad($remote_pad)
+            $url_pad
         );
     }
 
