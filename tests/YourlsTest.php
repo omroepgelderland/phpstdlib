@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace gldstdlib;
+namespace gldstdlib\tests;
 
+use gldstdlib\Yourls;
 use PHPUnit\Framework\TestCase;
 
 final class YourlsTest extends TestCase

@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
-namespace gldstdlib;
+namespace gldstdlib\tests;
 
 use gldstdlib\exception\MXFOmzetterException;
+use gldstdlib\FFMpegMXFFormat;
+use gldstdlib\MXFOmzetter;
 use PHPUnit\Framework\TestCase;
+
+use function gldstdlib\path_join;
 
 final class MXFOmzetterTest extends TestCase
 {

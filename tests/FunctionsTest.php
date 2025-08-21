@@ -2,13 +2,21 @@
 
 declare(strict_types=1);
 
-namespace gldstdlib;
+namespace gldstdlib\tests;
 
 use gldstdlib\exception\GLDException;
 use PHPUnit\Framework\TestCase;
 
+use function gldstdlib\format_telefoonnummer;
+use function gldstdlib\guzzle_get_contents;
+use function gldstdlib\guzzle_get_size;
+use function gldstdlib\maak_url_met_querystring;
+use function gldstdlib\parse_telefoonnummer;
+use function gldstdlib\path_join;
+use function gldstdlib\rrmdir;
 use function gldstdlib\safe\file_put_contents;
 use function gldstdlib\safe\json_decode;
+use function gldstdlib\vervang_bestandsnaam_tekens;
 
 final class FunctionsTest extends TestCase
 {

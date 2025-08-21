@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace gldstdlib;
+namespace gldstdlib\tests;
 
+use gldstdlib\DB;
 use gldstdlib\exception\NullException;
 use gldstdlib\exception\SQLNoResultException;
 use Medoo\Medoo;
