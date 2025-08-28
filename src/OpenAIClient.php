@@ -86,35 +86,28 @@ final class OpenAIClient
 
         $data = json_decode((string)$response->getBody(), true);
 
-        if (
-            \is_array($data) &&
-            \is_array($data['output']) &&
-            \is_array($data['output'][0]) &&
-            \is_array($data['output'][0]['content']) &&
-            \is_array($data['output'][0]['content'][0]) &&
-            \is_string($data['output'][0]['content'][0]['text'])
-        ) {
-            return $data['output'][0]['content'][0]['text'];
-        }
-        if (
-            \is_array($data) &&
-            \is_array($data['response']) &&
-            \is_array($data['response']['output']) &&
-            \is_array($data['response']['output'][0]) &&
-            \is_array($data['response']['output'][0]['content']) &&
-            \is_array($data['response']['output'][0]['content'][0]) &&
-            \is_string($data['response']['output'][0]['content'][0]['text'])
-        ) {
-            return $data['response']['output'][0]['content'][0]['text'];
-        }
-        if (
-            \is_array($data) &&
-            \is_array($data['choices']) &&
-            \is_array($data['choices'][0]) &&
-            \is_array($data['choices'][0]['message']) &&
-            \is_string($data['choices'][0]['message']['content'])
-        ) {
-            return $data['choices'][0]['message']['content'];
+        if (\is_array($data) && \is_array($data['output'])) {
+            $outputs = \array_filter(
+                $data['output'],
+                fn($v) =>
+                    \is_array($v) &&
+                    isset($v['type']) &&
+                    $v['type'] === 'message'
+            );
+            $output = \array_shift($outputs);
+            if (\is_array($output) && \is_array($output['content'])) {
+                $contents = \array_filter(
+                    $output['content'],
+                    fn($v) =>
+                        \is_array($v) &&
+                        isset($v['type']) &&
+                        $v['type'] === 'output_text'
+                );
+                $content = \array_shift($contents);
+                if (\is_array($content) && \is_string($content['text'])) {
+                    return $content['text'];
+                }
+            }
         }
         throw new GLDException("Ongeldig respons: \"{$response->getBody()}\"");
     }

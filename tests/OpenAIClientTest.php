@@ -39,28 +39,38 @@ final class OpenAIClientTest extends TestCase
         ];
     }
 
-    public function test_get_struct_response_success(): void
+    public function test_get_struct_response_success_gpt_no_reasoning(): void
     {
         $test_json = \json_encode([
             'is_geldig' => false,
             'artiest' => 'a',
             'titel' => 't',
         ]);
+        $e_test_json = \json_encode($test_json);
         $mock = new MockHandler([
             new Response(
                 200,
                 ['Content-Type' => 'application/json'],
-                \json_encode([
-                    'output' => [
-                        [
-                            'content' => [
-                                [
-                                    'text' => $test_json,
-                                ],
+                <<<EOT
+                {
+                    "output": [
+                        {
+                            "id": "msg_68b027e2540081918d6bd3472c9e157e0d73313127fcabed",
+                            "type": "message",
+                            "status": "completed",
+                            "content": [
+                                {
+                                    "type": "output_text",
+                                    "annotations": [],
+                                    "logprobs": [],
+                                    "text": {$e_test_json}
+                                }
                             ],
-                        ],
-                    ],
-                ])
+                            "role": "assistant"
+                        }
+                    ]
+                }
+                EOT
             ),
         ]);
         $client = new Client(['handler' => HandlerStack::create($mock)]);
@@ -72,6 +82,58 @@ final class OpenAIClientTest extends TestCase
             'input',
             $this->get_schema(),
             "gpt-4.1-mini",
+        );
+        $this->assertJsonStringEqualsJsonString($test_json, $data);
+    }
+
+    public function test_get_struct_response_success_reasoning(): void
+    {
+        $test_json = \json_encode([
+            'is_geldig' => false,
+            'artiest' => 'a',
+            'titel' => 't',
+        ]);
+        $e_test_json = \json_encode($test_json);
+        $mock = new MockHandler([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json'],
+                <<<EOT
+                {
+                    "output": [
+                        {
+                            "id": "rs_68b020a4f4388190bf715bccd0567b1008cfce3fea2cfbfa",
+                            "type": "reasoning",
+                            "summary": []
+                        },
+                        {
+                            "id": "msg_68b020a885408190bc5f2b125ac888b508cfce3fea2cfbfa",
+                            "type": "message",
+                            "status": "completed",
+                            "content": [
+                                {
+                                    "type": "output_text",
+                                    "annotations": [],
+                                    "logprobs": [],
+                                    "text": {$e_test_json}
+                                }
+                            ],
+                            "role": "assistant"
+                        }
+                    ]
+                }
+                EOT
+            ),
+        ]);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+
+        $api = new OpenAIClient('fake-key', $client);
+
+        $data = $api->get_struct_response(
+            'system instruction',
+            'input',
+            $this->get_schema(),
+            "gpt-5-nano",
         );
         $this->assertJsonStringEqualsJsonString($test_json, $data);
     }
