@@ -31,7 +31,6 @@ final class OpenAIClient
                 'Authorization' => "Bearer {$api_key}",
                 'Content-Type'  => 'application/json',
             ],
-            'timeout'  => 60.0,
         ]);
     }
 
@@ -42,6 +41,7 @@ final class OpenAIClient
      * @param $user_input specifieke vraag of door openai te beoordelen content
      * @param array<mixed> $format specificatie van JSON-formaat
      * @param $model model
+     * @param $timeout timeout in seconden, 0 is geen timeout (default)
      *
      * @return string Het respons van de api als string. Dit zou in het correcte
      * structured response moeten zijn en kan dan als JSON geparsed geworden.
@@ -53,6 +53,7 @@ final class OpenAIClient
         string $user_input,
         array $format,
         string $model,
+        int $timeout = 0,
     ): string {
         $payload = [
             'model' => $model,
@@ -74,6 +75,7 @@ final class OpenAIClient
         try {
             $response = $this->http->request('POST', 'responses', [
                 'json' => $payload,
+                'timeout' => $timeout,
             ]);
         } catch (GuzzleException $e) {
             throw new GLDException("HTTP request to OpenAI failed: {$e->getMessage()}", 0, $e);
