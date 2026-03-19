@@ -24,9 +24,13 @@ fi
 
 # versieverhoging
 oude_versie="$(git tag --list --sort=v:refname | grep -P '^\d+\.\d+\.\d+' | tail -n1)"
-echo "De huidige versie is $oude_versie. Versieverhoging? (major|minor|patch|premajor|preminor|prepatch|prerelease) "
-read -r versie_type
-nieuwe_versie="$(semver -i "$versie_type" "$oude_versie")"
+if [[ -z $oude_versie ]]; then
+    nieuwe_versie="0.1.0"
+else
+    echo "De huidige versie is $oude_versie. Versieverhoging? (major|minor|patch|premajor|preminor|prepatch|prerelease) "
+    read -r versie_type
+    nieuwe_versie="$(semver -i "$versie_type" "$oude_versie")"
+fi
 
 git tag "$nieuwe_versie"
 git push origin
