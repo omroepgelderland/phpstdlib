@@ -229,7 +229,7 @@ class DB
 
     /**
      * Geef de eerste kolom van de eerste rij van het resultaat van een SQL-
-     * query terug. Er wordt een SQLGeenResultaat gegeven als er geen resultaat
+     * query terug. Er wordt een SQLNoResultException gegeven als er geen resultaat
      * is.
      *
      * @param $table
@@ -253,9 +253,8 @@ class DB
         bool $nullable = true,
     ): mixed {
         if (count($join) === 0) {
-            $res = $this->get_db()->get($table, $column, $where);
+            $res = $this->get_db()->get($table, null, $column, $where);
         } else {
-            /** @phpstan-ignore argument.type, arguments.count */
             $res = $this->get_db()->get($table, $join, $column, $where);
         }
         if ($res === null && !$this->has($table, $where, $join)) {
@@ -459,7 +458,6 @@ class DB
     public function has(string $table, array $where, array $join = []): bool
     {
         if (count($join) > 0) {
-            // @phpstan-ignore arguments.count
             return $this->get_db()->has($table, $join, $where);
         } else {
             return $this->get_db()->has($table, $where);

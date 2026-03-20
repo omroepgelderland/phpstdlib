@@ -455,6 +455,14 @@ class S3
     {
         $root_pad = \rtrim($root_pad, '/') . '/';
         $lijst = [];
+        /**
+         * @var array{
+         *     Contents: list<array{
+         *         Key: string,
+         *         ETag: string,
+         *     }>
+         * } $objects
+         */
         $objects = $this->get_client()->getPaginator('ListObjects', [
             'Bucket' => $this->bucket_naam,
             'Prefix' => $root_pad,
