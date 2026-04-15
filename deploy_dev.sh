@@ -1,5 +1,18 @@
 #!/bin/bash
 
+function php_codesniffer() {
+    if ! php8.1 vendor/bin/phpcs --standard=ruleset.xml -n; then
+        echo "Fixen met phpcbf? (j/n)"
+        read -r ans
+        if [[ $ans != "j" ]]; then
+            exit 1
+        else
+            php8.1 vendor/bin/phpcbf --standard=ruleset.xml -n || :
+            php8.1 vendor/bin/phpcs --standard=ruleset.xml -n
+        fi
+    fi
+}
+
 set -euo pipefail
 
 export COMPOSER_NO_DEV=0
@@ -9,7 +22,7 @@ php8.1 vendor/bin/parallel-lint \
     --exclude vendor/ \
     ./
 vendor/bin/phpstan analyse
-php8.1 vendor/bin/phpcs --standard=ruleset.xml -n
+php_codesniffer
 php8.1 vendor/bin/phpunit tests
 php8.2 vendor/bin/phpunit tests
 php8.3 vendor/bin/phpunit tests

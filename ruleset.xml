@@ -89,6 +89,67 @@
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma" />
     <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses" />
     <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse" />
+    <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions">
+        <properties>
+            <property name="exclude" type="array">
+                <element value="add_mail_attachment_data"/>
+                <element value="add_mail_attachment_paths"/>
+                <element value="blob_mime_content_type"/>
+                <element value="bool_null_val"/>
+                <element value="build_mail"/>
+                <element value="exception_error_handler_plus"/>
+                <element value="exception_error_handler"/>
+                <element value="fclose_safe"/>
+                <element value="filter_bool_array"/>
+                <element value="filter_bool"/>
+                <element value="filter_float_array"/>
+                <element value="filter_float"/>
+                <element value="filter_int_array"/>
+                <element value="filter_int"/>
+                <element value="filter_number"/>
+                <element value="float_null_val"/>
+                <element value="format_bytes_afgerond"/>
+                <element value="format_telefoonnummer"/>
+                <element value="fs"/>
+                <element value="genereer_random_string"/>
+                <element value="get_client_ip"/>
+                <element value="get_extensie_uit_type"/>
+                <element value="get_running_script_path"/>
+                <element value="get_tijdzone"/>
+                <element value="guzzle_get_contents"/>
+                <element value="guzzle_get_size"/>
+                <element value="ingest_scandir"/>
+                <element value="int_null_val"/>
+                <element value="is_bestand_klaar"/>
+                <element value="is_browser"/>
+                <element value="is_cli"/>
+                <element value="is_cron"/>
+                <element value="ltrim_nbsp"/>
+                <element value="maak_url_met_querystring"/>
+                <element value="maak_url_slug"/>
+                <element value="mime2ext"/>
+                <element value="ns"/>
+                <element value="obj_null_val"/>
+                <element value="parse_datetime"/>
+                <element value="parse_telefoonnummer"/>
+                <element value="path_join"/>
+                <element value="readline_met_default"/>
+                <element value="rrmdir"/>
+                <element value="rtrim_nbsp"/>
+                <element value="scandir_recursive"/>
+                <element value="send_mail"/>
+                <element value="set_lokale_tijdzone"/>
+                <element value="split_email_address"/>
+                <element value="strftime_intl"/>
+                <element value="trim_nbsp"/>
+                <element value="unlink_safe"/>
+                <element value="url_bestaat"/>
+                <element value="vervang_bestandsnaam_tekens"/>
+                <element value="wacht_tot_bestand_klaar_is"/>
+                <element value="y2k"/>
+            </property>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalConstants" />
     <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine" />
     <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration" />

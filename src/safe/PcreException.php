@@ -16,7 +16,7 @@ class PcreException extends SafeException
             \PREG_BAD_UTF8_OFFSET_ERROR => 'PREG_BAD_UTF8_OFFSET_ERROR',
             \PREG_JIT_STACKLIMIT_ERROR => 'PREG_JIT_STACKLIMIT_ERROR',
         ];
-        $errMsg = $errorMap[preg_last_error()] ?? 'Unknown PCRE error: ' . preg_last_error();
+        $errMsg = $errorMap[\preg_last_error()] ?? 'Unknown PCRE error: ' . \preg_last_error();
         return new static($errMsg, \preg_last_error());
     }
 }

@@ -26,19 +26,16 @@ use gldstdlib\exception\UserWarningErrorException;
 use gldstdlib\exception\WarningErrorException;
 use gldstdlib\safe\FilesystemException;
 use gldstdlib\safe\SafeException;
+use PHPMailer\PHPMailer\PHPMailer;
 
 use function gldstdlib\safe\curl_exec;
 use function gldstdlib\safe\curl_init;
 use function gldstdlib\safe\curl_setopt_array;
-use function gldstdlib\safe\fclose;
 use function gldstdlib\safe\filesize;
-use function gldstdlib\safe\fopen;
-use function gldstdlib\safe\fwrite;
 use function gldstdlib\safe\iconv;
 use function gldstdlib\safe\mime_content_type;
 use function gldstdlib\safe\preg_match;
 use function gldstdlib\safe\preg_replace;
-use function gldstdlib\safe\rewind;
 use function gldstdlib\safe\scandir;
 
 /**
@@ -929,25 +926,18 @@ function readline_met_default(
  */
 function get_running_script_path(): string
 {
-    return get_included_files()[0];
+    return \get_included_files()[0];
 }
 
 /**
  * Geeft het mimetype van een blob.
  *
- * @throws \gldstdlib\safe\FilesystemException
- * @throws \gldstdlib\safe\FileinfoException
+ * @throws \gldstdlib\safe\SafeException
  */
 function blob_mime_content_type(string $data): string
 {
-    $stream = fopen('php://temp', 'r+');
-    try {
-        fwrite($stream, $data);
-        rewind($stream);
-        return mime_content_type($stream);
-    } finally {
-        fclose($stream);
-    }
+    $finfo = new \finfo(\FILEINFO_MIME_TYPE);
+    return fs($finfo->buffer($data));
 }
 
 /**
@@ -1141,8 +1131,8 @@ function format_telefoonnummer(string $telefoonnummer): string
     ];
     foreach ($patronen as $patroon) {
         if (preg_match($patroon, $telefoonnummer, $m)) {
-            array_shift($m);
-            return implode(' ', $m);
+            \array_shift($m);
+            return \implode(' ', $m);
         }
     }
     return $telefoonnummer;
@@ -1175,9 +1165,323 @@ function get_client_ip(): ?string
  */
 function vervang_bestandsnaam_tekens(string $string): string
 {
-    return str_replace(
+    return \str_replace(
         ['<', '>', ':', '"', '/', '\\', '|', '?', '*'],
         ['﹤', '﹥', 'ː', '“', '⁄', '∖', '⼁', '﹖', '﹡'],
         $string
     );
+}
+
+/**
+ * Null_safe
+ *
+ * Wrapper function for functions that return null in case of an error.
+ *
+ * @template T
+ *
+ * @param T|null $value
+ *
+ * @return T
+ *
+ * @throws safe\SafeException If $value is null.
+ */
+function ns($value)
+{
+    \error_clear_last();
+    if ($value === null) {
+        throw safe\SafeException::createFromPhpError();
+    }
+    return $value;
+}
+
+/**
+ * False_safe
+ *
+ * Wrapper function for functions that return false in case of an error.
+ *
+ * @template T
+ *
+ * @param T|false $value
+ *
+ * @return T
+ *
+ * @throws safe\SafeException If $value is false.
+ */
+function fs($value)
+{
+    \error_clear_last();
+    if ($value === false) {
+        throw safe\SafeException::createFromPhpError();
+    }
+    return $value;
+}
+
+/**
+ * Build and configure a PHPMailer instance for an email.
+ *
+ * @internal
+ *
+ * @param PHPMailer $mail The PHPMailer instance to configure
+ * @param EmailAddress|list<EmailAddress>|string|list<string> $to List of
+ * recipients
+ * @param EmailAddress|string $from Sender address
+ * @param string $subject Subject
+ * @param string|null $text_message Plaintext message
+ * @param string|\DOMDocument|null $html_message HTML message (optional)
+ * @param list<array{
+ *     path: string,
+ *     filename?: string,
+ *     mimetype?: string
+ * }|string> $attachment_paths List of attachments as file paths. The filename
+ * and mimetype are determined automatically if not provided.
+ * @param list<array{
+ *     data: string,
+ *     filename: string,
+ *     mimetype?: string
+ * }> $attachment_data List of attachments as data
+ * @param EmailAddress|list<EmailAddress>|string|list<string> $cc List of CC
+ * recipients (optional)
+ * @param EmailAddress|string|null $reply_to Reply-To address (optional)
+ *
+ * @throws GLDException
+ */
+function build_mail(
+    PHPMailer $mail,
+    EmailAddress|array|string $to,
+    EmailAddress|string $from,
+    string $subject,
+    ?string $text_message = null,
+    string|\DOMDocument|null $html_message = null,
+    array $attachment_paths = [],
+    array $attachment_data = [],
+    EmailAddress|array|string $cc = [],
+    EmailAddress|string|null $reply_to = null,
+): void {
+    if (!\is_array($to)) {
+        $to = [$to];
+    }
+    if (!\is_array($cc)) {
+        $cc = [$cc];
+    }
+
+    if ($text_message === null && $html_message === null) {
+        throw new GLDException(
+            'No plaintext or HTML message provided'
+        );
+    }
+
+    if ($text_message === null) {
+        if ($html_message instanceof \DOMDocument) {
+            $text_message = $html_message->textContent ?? '';
+        } else {
+            $dom = new \DOMDocument();
+            $dom->loadHTML($html_message);
+            $text_message = $dom->textContent ?? '';
+        }
+    }
+
+    if ($html_message instanceof \DOMDocument) {
+        $html_message = fs($html_message->saveHTML());
+    }
+
+    $mail->isSendmail();
+
+    $mail->CharSet = 'UTF-8';
+    $mail->Encoding = '7bit';
+
+    [$from_email, $from_name] = split_email_address($from);
+    $mail->setFrom($from_email, $from_name);
+
+    foreach ($to as $address) {
+        [$email, $name] = split_email_address($address);
+        $mail->addAddress($email, $name);
+    }
+
+    foreach ($cc as $address) {
+        [$email, $name] = split_email_address($address);
+        $mail->addCC($email, $name);
+    }
+
+    if ($reply_to !== null) {
+        [$email, $name] = split_email_address($reply_to);
+        $mail->addReplyTo($email, $name);
+    }
+
+    $mail->Subject = $subject;
+    $mail->Body = $html_message ?? $text_message;
+    $mail->AltBody = $text_message;
+
+    $mail->isHTML($html_message !== null);
+
+    add_mail_attachment_paths($mail, $attachment_paths);
+    add_mail_attachment_data($mail, $attachment_data);
+}
+
+/**
+ * Send an email.
+ *
+ * @param EmailAddress|list<EmailAddress>|string|list<string> $to List of
+ * recipients
+ * @param EmailAddress|string $from Sender address
+ * @param string $subject Subject
+ * @param string|null $text_message Plaintext message
+ * @param string|\DOMDocument|null $html_message HTML message (optional)
+ * @param list<array{
+ *     path: string,
+ *     filename?: string,
+ *     mimetype?: string
+ * }|string> $attachment_paths List of attachments as file paths. The filename
+ * and mimetype are determined automatically if not provided.
+ * @param list<array{
+ *     data: string,
+ *     filename: string,
+ *     mimetype?: string
+ * }> $attachment_data List of attachments as data
+ * @param EmailAddress|list<EmailAddress>|string|list<string> $cc List of CC
+ * recipients (optional)
+ * @param EmailAddress|string|null $reply_to Reply-To address (optional)
+ *
+ * @throws GLDException
+ */
+function send_mail(
+    EmailAddress|array|string $to,
+    EmailAddress|string $from,
+    string $subject,
+    ?string $text_message = null,
+    string|\DOMDocument|null $html_message = null,
+    array $attachment_paths = [],
+    array $attachment_data = [],
+    EmailAddress|array|string $cc = [],
+    EmailAddress|string|null $reply_to = null
+): void {
+    $mail = new PHPMailer(true);
+
+    try {
+        build_mail(
+            $mail,
+            $to,
+            $from,
+            $subject,
+            $text_message,
+            $html_message,
+            $attachment_paths,
+            $attachment_data,
+            $cc,
+            $reply_to
+        );
+
+        if (!$mail->send()) {
+            throw new GLDException();
+        }
+    } catch (\Throwable $e) {
+        throw new GLDException(
+            "Failed to send email: {$mail->ErrorInfo}",
+            $e->getCode(),
+            $e
+        );
+    }
+}
+
+/**
+ * Adds attachments to a PHPMailer object using a list of file paths.
+ * The filename and mimetype are determined automatically if not provided.
+ *
+ * @internal
+ *
+ * @param PHPMailer $mail The PHPMailer instance to add attachments to
+ * @param list<array{
+ *     path: string,
+ *     filename?: string,
+ *     mimetype?: string
+ * }|string> $paths List of attachments as file paths
+ */
+function add_mail_attachment_paths(
+    PHPMailer $mail,
+    array $paths,
+): void {
+    foreach ($paths as $attachment) {
+        if (\is_array($attachment)) {
+            $path = $attachment['path'];
+            $filename = $attachment['filename'] ?? '';
+            $mimetype = $attachment['mimetype'] ?? null;
+        } else {
+            $path = $attachment;
+            $filename = '';
+            $mimetype = null;
+        }
+
+        if (!isset($mimetype)) {
+            $mimetype = \mime_content_type($path);
+            if ($mimetype === false) {
+                $mimetype = 'application/octet-stream';
+            }
+        }
+
+        $mail->addAttachment(
+            $path,
+            $filename,
+            type: $mimetype,
+        );
+    }
+}
+
+/**
+ * Adds attachments to a PHPMailer object using raw data.
+ * The filename is required; mimetype is determined automatically if not
+ * provided.
+ *
+ * @internal
+ *
+ * @param PHPMailer $mail The PHPMailer instance to add attachments to
+ * @param list<array{
+ *     data: string,
+ *     filename: string,
+ *     mimetype?: string
+ * }> $data_list List of attachments as data
+ */
+function add_mail_attachment_data(
+    PHPMailer $mail,
+    array $data_list,
+): void {
+    foreach ($data_list as $item) {
+        $data = $item['data'];
+        $filename = $item['filename'];
+        $mimetype = $item['mimetype'] ?? null;
+
+        if (!isset($mimetype)) {
+            try {
+                $mimetype = blob_mime_content_type($data);
+            } catch (\gldstdlib\safe\SafeException) {
+                $mimetype = 'application/octet-stream';
+            }
+        }
+
+        $mail->addStringAttachment(
+            $data,
+            $filename,
+            type: $mimetype,
+        );
+    }
+}
+
+/**
+ * Splits an EmailAddress object or string into an email address and name.
+ * The name is optional; if only a string is provided, the name is empty.
+ *
+ * @internal
+ *
+ * @param EmailAddress|string $address
+ *
+ * @return array{
+ *     0: string,
+ *     1: string
+ * } Email, name
+ */
+function split_email_address(EmailAddress|string $address): array
+{
+    if ($address instanceof EmailAddress) {
+        return [$address->email, $address->name];
+    }
+
+    return [$address, ''];
 }

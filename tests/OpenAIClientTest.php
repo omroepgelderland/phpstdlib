@@ -142,7 +142,7 @@ final class OpenAIClientTest extends TestCase
     {
         // Arrange: mock a 500 response
         $mock = new MockHandler([
-            new Response(500, ['Content-Type' => 'application/json'], json_encode(['error' => 'boom'])),
+            new Response(500, ['Content-Type' => 'application/json'], \json_encode(['error' => 'boom'])),
         ]);
         $client = new Client(['handler' => HandlerStack::create($mock)]);
 

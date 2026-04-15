@@ -90,7 +90,7 @@ class Yourls
          *     shorturl: string
          * }|mixed $respons_data
          */
-        $respons_data = json_decode($response);
+        $respons_data = \json_decode($response);
         if (!\is_object($respons_data)) {
             $respons_data = new \stdClass();
         }

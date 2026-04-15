@@ -7,6 +7,8 @@ namespace gldstdlib;
 /**
  * Houdt de voortgang van een S3 multipart upload bij.
  *
+ * @internal
+ *
  * @phpstan-type Callback callable(int, int): void
  */
 class S3MultipartProgress

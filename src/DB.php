@@ -181,10 +181,10 @@ class DB
         array $join = [],
     ): string {
         $dummy_db = $this->get_dummy_db();
-        if (count($where) + count($join) === 0) {
+        if (\count($where) + \count($join) === 0) {
             // @phpstan-ignore-next-line
             $dummy_db->select($table, $columns);
-        } elseif (count($join) === 0) {
+        } elseif (\count($join) === 0) {
             // @phpstan-ignore-next-line
             $dummy_db->select($table, $columns, $where);
         } else {
@@ -210,10 +210,10 @@ class DB
         array $where = [],
         array $join = [],
     ): array {
-        if (count($where) + count($join) === 0) {
+        if (\count($where) + \count($join) === 0) {
             // @phpstan-ignore-next-line
             $res = $this->get_db()->select($table, $columns);
-        } elseif (count($join) === 0) {
+        } elseif (\count($join) === 0) {
             // @phpstan-ignore-next-line
             $res = $this->get_db()->select($table, $columns, $where);
         } else {
@@ -252,7 +252,7 @@ class DB
         array $join = [],
         bool $nullable = true,
     ): mixed {
-        if (count($join) === 0) {
+        if (\count($join) === 0) {
             $res = $this->get_db()->get($table, null, $column, $where);
         } else {
             $res = $this->get_db()->get($table, $join, $column, $where);
@@ -457,7 +457,7 @@ class DB
      */
     public function has(string $table, array $where, array $join = []): bool
     {
-        if (count($join) > 0) {
+        if (\count($join) > 0) {
             return $this->get_db()->has($table, $join, $where);
         } else {
             return $this->get_db()->has($table, $where);
