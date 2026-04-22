@@ -29,6 +29,7 @@ use Medoo\Medoo;
  *     veranderd: bool,
  *     id?: int|string
  * }
+ * @phpstan-type MedooColumnsType string|\Medoo\Raw|array<int|string, string|\Medoo\Raw|array<int|string, mixed>>
  */
 class DB
 {
@@ -168,7 +169,7 @@ class DB
      * Geeft een querystring voor een SELECT-query.
      *
      * @param $table
-     * @param string|list<string> $columns
+     * @param MedooColumnsType $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
      *
@@ -176,7 +177,7 @@ class DB
      */
     private function get_select_query(
         string $table,
-        string|array $columns,
+        string|array|\Medoo\Raw $columns,
         array $where = [],
         array $join = [],
     ): string {
@@ -198,7 +199,7 @@ class DB
      * Voert een selectquery uit.
      *
      * @param $table
-     * @param string|list<string> $columns
+     * @param MedooColumnsType $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
      *
@@ -206,7 +207,7 @@ class DB
      */
     private function execute_select_query(
         string $table,
-        string|array $columns,
+        string|array|\Medoo\Raw $columns,
         array $where = [],
         array $join = [],
     ): array {
@@ -247,14 +248,16 @@ class DB
      */
     public function select_single(
         string $table,
-        string $column,
+        string|\Medoo\Raw $column,
         array $where,
         array $join = [],
         bool $nullable = true,
     ): mixed {
         if (\count($join) === 0) {
+            // @phpstan-ignore-next-line
             $res = $this->get_db()->get($table, null, $column, $where);
         } else {
+            // @phpstan-ignore-next-line
             $res = $this->get_db()->get($table, $join, $column, $where);
         }
         if ($res === null && !$this->has($table, $where, $join)) {
@@ -288,7 +291,7 @@ class DB
     public function select_column(
         string $type,
         string $table,
-        string $column,
+        string|\Medoo\Raw $column,
         array $where = [],
         array $join = [],
     ): DBIterator {
@@ -306,7 +309,7 @@ class DB
      * Geeft een entry van één enkele rij.
      *
      * @param $table
-     * @param list<string>|string $columns
+     * @param MedooColumnsType $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
      *
@@ -316,7 +319,7 @@ class DB
      */
     public function select_row(
         string $table,
-        array|string $columns,
+        array|string|\Medoo\Raw $columns,
         array $where = [],
         array $join = [],
     ): array {
@@ -332,13 +335,13 @@ class DB
      * resultaat niet in het geheel in het geheugen wordt geladen.
      *
      * @param $table
-     * @param list<string> $columns
+     * @param MedooColumnsType $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
      */
     public function select_pdo(
         string $table,
-        array $columns,
+        string|array|\Medoo\Raw $columns,
         array $where = [],
         array $join = [],
     ): \PDOStatement {
@@ -356,7 +359,7 @@ class DB
      * Geeft het gehele resultaat van een query.
      *
      * @param $table
-     * @param list<string>|string $columns
+     * @param MedooColumnsType $columns
      * @param array<string, mixed> $where
      * @param array<string, mixed> $join
      *
@@ -364,7 +367,7 @@ class DB
      */
     public function select(
         string $table,
-        array|string $columns,
+        array|string|\Medoo\Raw $columns,
         array $where = [],
         array $join = [],
     ): array {
@@ -397,7 +400,7 @@ class DB
     public function select_objecten(
         $object_type,
         string $table,
-        string $column,
+        string|\Medoo\Raw $column,
         array $where = [],
         array $join = [],
         mixed ...$args,
@@ -439,7 +442,7 @@ class DB
     public function select_object(
         $object_type,
         string $table,
-        string $column,
+        string|\Medoo\Raw $column,
         array $where = [],
         array $join = [],
         mixed ...$args,
