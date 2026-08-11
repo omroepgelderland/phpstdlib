@@ -23,7 +23,7 @@ if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
 fi
 
 # versieverhoging
-oude_versie="$(git tag --list --sort=v:refname | grep -P '^\d+\.\d+\.\d+' | tail -n1)"
+oude_versie="$(git tag --list --sort=v:refname | grep -P '^\d+\.\d+\.\d+' | tail -n1 || :)"
 if [[ -z $oude_versie ]]; then
     nieuwe_versie="0.1.0"
 else
