@@ -96,7 +96,7 @@ final class FunctionsTest extends TestCase
 
     public function test_guzzle_get_contents_fail(): void
     {
-        $this->expectException(\GuzzleHttp\Exception\ConnectException::class);
+        $this->expectException(\GuzzleHttp\Exception\RequestException::class);
         guzzle_get_contents('fh9w3yr9w3ywhg');
     }
 
@@ -119,7 +119,7 @@ final class FunctionsTest extends TestCase
 
     public function test_guzzle_get_size_fail(): void
     {
-        $this->expectException(\GuzzleHttp\Exception\ConnectException::class);
+        $this->expectException(\GuzzleHttp\Exception\RequestException::class);
         guzzle_get_size('fh9w3yr9w3ywhg');
     }
 

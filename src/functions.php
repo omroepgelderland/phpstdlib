@@ -988,7 +988,7 @@ function url_bestaat(string $url): bool
         ]);
         curl_exec($ch);
         $http_code = \curl_getinfo($ch)['http_code'];
-        \curl_close($ch);
+        $ch = null;
         return $http_code >= 200 && $http_code < 300;
     } catch (\gldstdlib\safe\CurlException) {
         return false;

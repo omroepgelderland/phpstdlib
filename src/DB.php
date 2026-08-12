@@ -87,7 +87,7 @@ class DB
      */
     public function get_pdo(): \PDO
     {
-        return $this->get_db()->pdo;
+        return ns($this->get_db()->pdo);
     }
 
     /**
@@ -192,7 +192,7 @@ class DB
             // @phpstan-ignore-next-line
             $dummy_db->select($table, $join, $columns, $where);
         }
-        return $dummy_db->queryString;
+        return ns($dummy_db->queryString);
     }
 
     /**
@@ -524,7 +524,7 @@ class DB
         $dummy_db->insert($table, $values);
         $insert_str = $dummy_db->queryString;
         $dummy_db->update($table, $values);
-        $update_str = $dummy_db->queryString;
+        $update_str = ns($dummy_db->queryString);
         $update_str = \explode(' SET ', $update_str, 2)[1];
         $query = "{$insert_str} ON DUPLICATE KEY UPDATE {$update_str};";
 

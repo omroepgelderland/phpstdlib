@@ -30,7 +30,8 @@ class Yourls
     /**
      * Haalt de short URL uit de API
      *
-     * @param array<string, mixed> $params Associatieve array met queryparameters
+     * @param array<string, array<array-key, bool|float|int|string|null>|bool|float|int|string|null> $params
+     * Associatieve array met queryparameters.
      * @param $pogingen Aantal pogingen bij HTTP errors. Alleen voor recursie.
      *
      * @return string Short url

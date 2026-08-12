@@ -456,12 +456,12 @@ class S3
         $root_pad = \rtrim($root_pad, '/') . '/';
         $lijst = [];
         /**
-         * @var array{
+         * @var iterable<array{
          *     Contents: list<array{
          *         Key: string,
          *         ETag: string,
          *     }>
-         * } $objects
+         * }> $objects
          */
         $objects = $this->get_client()->getPaginator('ListObjects', [
             'Bucket' => $this->bucket_naam,
