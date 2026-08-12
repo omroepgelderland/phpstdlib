@@ -1485,3 +1485,21 @@ function split_email_address(EmailAddress|string $address): array
 
     return [$address, ''];
 }
+
+/**
+ * Throws an InvalidArgumentException if the given object is not an instance of
+ * the specified class.
+ *
+ * @template T of object
+ *
+ * @param class-string<T> $class_name
+ *
+ * @return T
+ */
+function is(object $object, string $class_name): object
+{
+    if (!\is_a($object, $class_name)) {
+        throw new \InvalidArgumentException("Object is not an instance of {$class_name}");
+    }
+    return $object;
+}

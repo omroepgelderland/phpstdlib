@@ -809,6 +809,24 @@ final class FunctionsTest extends TestCase
         );
     }
 
+    public function test_is_returns_same_object_for_matching_class(): void
+    {
+        $object = new \stdClass();
+
+        self::assertSame(
+            $object,
+            \gldstdlib\is($object, \stdClass::class),
+        );
+    }
+
+    public function test_is_throws_for_mismatched_class(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Object is not an instance of stdClass');
+
+        \gldstdlib\is(new \DateTime(), \stdClass::class);
+    }
+
     private function createTempFile(string $contents): string
     {
         $path = \tempnam(\sys_get_temp_dir(), 'phpunit-mail-');

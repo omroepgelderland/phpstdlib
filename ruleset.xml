@@ -124,6 +124,7 @@
                 <element value="is_browser"/>
                 <element value="is_cli"/>
                 <element value="is_cron"/>
+                <element value="is"/>
                 <element value="ltrim_nbsp"/>
                 <element value="maak_url_met_querystring"/>
                 <element value="maak_url_slug"/>
