@@ -13,7 +13,8 @@
 	"prefer-stable": true,
 	"autoload": {
 		"psr-4": {
-			"gldstdlib\\": "src/"
+			"gldstdlib\\": "src/",
+            "gldstdlib\\tests\\": "tests/"
 		},
 		"files": [
 			"src/functions.php",
@@ -46,7 +47,8 @@
         "ext-ldap": "*",
         "ext-pcntl": "*",
         "ext-pdo": "*",
-        "ext-pdo_mysql": "*"
+        "ext-pdo_mysql": "*",
+        "google/apiclient": "^2.19"
     },
     "config": {
         "allow-plugins": {
