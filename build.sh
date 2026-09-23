@@ -11,7 +11,7 @@ if [[ $(git rev-parse --abbrev-ref HEAD) != "master" ]]; then
     fi
 fi
 
-./deploy_dev.sh
+./build-dev.sh
 
 if [ -n "$(git status --untracked-files=no --porcelain)" ]; then
     git status

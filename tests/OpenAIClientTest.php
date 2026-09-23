@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace gldstdlib\tests;
 
-use gldstdlib\exception\GLDException;
 use gldstdlib\OpenAIClient;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -35,8 +34,28 @@ final class OpenAIClientTest extends TestCase
                 'required' => ['is_geldig', 'titel', 'artiest'],
                 'additionalProperties' => false,
             ],
-            "strict" => true,
+            'strict' => true,
         ];
+    }
+
+    private function get_payload(string $model, ?string $reasoning = null): array
+    {
+        $payload = [
+            'input' => 'input',
+            'instructions' => 'system instruction',
+            'model' => $model,
+            'text' => [
+                'format' => $this->get_schema(),
+            ],
+        ];
+
+        if ($reasoning !== null) {
+            $payload['reasoning'] = [
+                'effort' => $reasoning,
+            ];
+        }
+
+        return $payload;
     }
 
     public function test_get_struct_response_success_gpt_no_reasoning(): void
@@ -78,10 +97,7 @@ final class OpenAIClientTest extends TestCase
         $api = new OpenAIClient('fake-key', $client);
 
         $data = $api->get_struct_response(
-            'system instruction',
-            'input',
-            $this->get_schema(),
-            "gpt-4.1-mini",
+            $this->get_payload('gpt-4.1-mini'),
         );
         $this->assertJsonStringEqualsJsonString($test_json, $data);
     }
@@ -130,15 +146,12 @@ final class OpenAIClientTest extends TestCase
         $api = new OpenAIClient('fake-key', $client);
 
         $data = $api->get_struct_response(
-            'system instruction',
-            'input',
-            $this->get_schema(),
-            "gpt-5-nano",
+            $this->get_payload('gpt-5-nano', 'medium'),
         );
         $this->assertJsonStringEqualsJsonString($test_json, $data);
     }
 
-    public function testGetResponseNon2xxThrowsGLDException(): void
+    public function testGetResponseNon2xxThrowsRuntimeException(): void
     {
         // Arrange: mock a 500 response
         $mock = new MockHandler([
@@ -149,14 +162,12 @@ final class OpenAIClientTest extends TestCase
         $api = new OpenAIClient('fake-key', $client);
 
         // Assert (expect exception)
-        $this->expectException(GLDException::class);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('HTTP request to OpenAI failed');
 
         // Act
         $api->get_struct_response(
-            'system instruction',
-            'input',
-            $this->get_schema(),
-            "gpt-4.1-mini",
+            $this->get_payload('gpt-4.1-mini'),
         );
     }
 }

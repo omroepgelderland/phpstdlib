@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace gldstdlib;
 
-use gldstdlib\exception\GLDException;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -14,6 +13,22 @@ use function gldstdlib\safe\json_decode;
 /**
  * Client voor openai via http. De community client in Composer heeft PHP 8.2
  * nodig.
+ *
+ * @phpstan-type EasyInputMessageType array{
+ *     content: string,
+ *     role: 'user'|'assistant'|'system'|'developer',
+ *     phase?: 'commentary'|'final_answer'|null,
+ * }
+ * @phpstan-type ReasoningType array{
+ *     context?: 'auto'|'current_turn'|'all_turns'|null,
+ *     effort?: 'none'|'minimal'|'low'|'medium'|'high'|'xhigh'|'max'|null,
+ *     mode?: string,
+ *     summary?: 'auto'|'concise'|'detailed'|null,
+ * }
+ * @phpstan-type ResponseTextConfigType array{
+ *     format: array<mixed>,
+ *     verbosity?: 'low'|'medium'|'high'|null,
+ * }
  */
 final class OpenAIClient
 {
@@ -37,53 +52,35 @@ final class OpenAIClient
     /**
      * Voer een openai query uit met een structured response.
      *
-     * @param $system_input generieke instructies.
-     * @param $user_input specifieke vraag of door openai te beoordelen content
-     * @param array<mixed> $format specificatie van JSON-formaat
-     * @param $model model
-     * @param $timeout timeout in seconden, 0 is geen timeout (default)
+     * @param array{
+     *     input: string|list<EasyInputMessageType>,
+     *     instructions?: string,
+     *     model?: string,
+     *     reasoning?: ReasoningType,
+     *     text?: ResponseTextConfigType,
+     * } $payload The payload to send to the OpenAI API.
      *
      * @return string Het respons van de api als string. Dit zou in het correcte
      * structured response moeten zijn en kan dan als JSON geparsed geworden.
      *
-     * @throws GLDException on non-2xx or unexpected payload
+     * @throws \RuntimeException on non-2xx or unexpected payload
      */
     public function get_struct_response(
-        string $system_input,
-        string $user_input,
-        array $format,
-        string $model,
+        array $payload,
         int $timeout = 0,
     ): string {
-        $payload = [
-            'model' => $model,
-            'input' => [
-                [
-                    'role' => 'system',
-                    'content' => $system_input,
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $user_input,
-                ],
-            ],
-            'text' => [
-                'format' => $format,
-            ],
-        ];
-
         try {
             $response = $this->http->request('POST', 'responses', [
                 'json' => $payload,
                 'timeout' => $timeout,
             ]);
         } catch (GuzzleException $e) {
-            throw new GLDException("HTTP request to OpenAI failed: {$e->getMessage()}", 0, $e);
+            throw new \RuntimeException("HTTP request to OpenAI failed: {$e->getMessage()}", 0, $e);
         }
 
         $status = $response->getStatusCode();
         if ($status < 200 || $status >= 300) {
-            throw new GLDException("OpenAI API returned status {$status}");
+            throw new \RuntimeException("OpenAI API returned status {$status}");
         }
 
         $data = json_decode((string)$response->getBody(), true);
@@ -111,6 +108,6 @@ final class OpenAIClient
                 }
             }
         }
-        throw new GLDException("Ongeldig respons: \"{$response->getBody()}\"");
+        throw new \RuntimeException("Ongeldig respons: \"{$response->getBody()}\"");
     }
 }
