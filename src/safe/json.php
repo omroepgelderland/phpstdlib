@@ -9,13 +9,12 @@ namespace gldstdlib\safe;
  *
  * @link http://www.php.net/manual/en/function.json-decode.php
  *
- * @param $json    JSON data to parse
- * @param $associative     When true, returned objects will be converted
+ * @param $json JSON data to parse
+ * @param $associative When true, returned objects will be converted
  *                        into associative arrays.
- * @param int<1, max> $depth   User specified recursion depth.
+ * @param int<1, max> $depth User specified recursion depth.
  * @param $flags Bitmask of JSON decode options.
  *
- * @return mixed
  *
  * @throws JsonException if the JSON cannot be decoded.
  */
@@ -23,7 +22,7 @@ function json_decode(
     string $json,
     ?bool $associative = null,
     int $depth = 512,
-    int $flags = 0
+    int $flags = 0,
 ): mixed {
     \error_clear_last();
     $data = \json_decode($json, $associative, $depth, $flags);
@@ -35,7 +34,7 @@ function json_decode(
 
 /**
  * Returns a string containing the JSON representation of the supplied
- * value.  If the parameter is an array or object,
+ * value. If the parameter is an array or object,
  * it will be serialized recursively.
  *
  * If a value to be serialized is an object, then by default only publicly visible
@@ -80,7 +79,7 @@ function json_decode(
 function json_encode(
     mixed $value,
     int $flags = 0,
-    int $depth = 512
+    int $depth = 512,
 ): string {
     \error_clear_last();
     $safeResult = \json_encode($value, $flags, $depth);

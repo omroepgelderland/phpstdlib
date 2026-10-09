@@ -16,7 +16,7 @@ final class MXFOmzetterTest extends TestCase
     private function test_callback(
         \FFMpeg\Media\AdvancedMedia $video,
         FFMpegMXFFormat $format,
-        float $percentage
+        float $percentage,
     ): void {
         $this->assertInstanceOf(\FFMpeg\Media\AdvancedMedia::class, $video);
         $this->assertInstanceOf(FFMpegMXFFormat::class, $format);

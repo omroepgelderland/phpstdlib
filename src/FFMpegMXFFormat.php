@@ -11,7 +11,7 @@ class FFMpegMXFFormat extends \FFMpeg\Format\Video\DefaultVideo
 {
     public function __construct(
         string $audio_codec = 'pcm_s16le',
-        string $video_codec = 'mpeg2video'
+        string $video_codec = 'mpeg2video',
     ) {
         $this->setVideoCodec($video_codec);
         $this->setAudioCodec($audio_codec);

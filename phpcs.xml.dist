@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset
+    name="phpstdlib"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpcodesniffer.com/phpcs.xsd"
+>
+    <config name="php_version" value="80102" />
+    <arg name="extensions" value="php" />
+    <file>./</file>
+    <exclude-pattern>./vendor/</exclude-pattern>
+    <exclude-pattern>./test/</exclude-pattern>
+
+    <rule ref="OmroepGelderland" />
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>*/exceptions.php$</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Commenting.DocCommentSpacing">
+        <exclude-pattern>*/src/safe/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+</ruleset>

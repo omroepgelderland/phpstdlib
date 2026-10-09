@@ -45,7 +45,7 @@ final class EmailAddressTest extends TestCase
 
         self::assertSame(
             'a@example.com,b@example.com',
-            EmailAddress::create_address_list($lijst)
+            EmailAddress::create_address_list($lijst),
         );
     }
 
@@ -58,7 +58,7 @@ final class EmailAddressTest extends TestCase
 
         self::assertSame(
             'Remy Glaser <rglaser@gld.nl>,info@example.com',
-            EmailAddress::create_address_list($lijst)
+            EmailAddress::create_address_list($lijst),
         );
     }
 
@@ -72,7 +72,7 @@ final class EmailAddressTest extends TestCase
 
         self::assertSame(
             'plain@example.com,Remy Glaser <rglaser@gld.nl>,info@example.com',
-            EmailAddress::create_address_list($lijst)
+            EmailAddress::create_address_list($lijst),
         );
     }
 }

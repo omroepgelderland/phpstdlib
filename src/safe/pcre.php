@@ -15,14 +15,14 @@ namespace gldstdlib\safe;
  * @param $subject <p>
  * The input string.
  * </p>
- * @param string[] &$matches [optional] <p>
+ * @param array<string> &$matches [optional] <p>
  * If <i>matches</i> is provided, then it is filled with
  * the results of search. $matches[0] will contain the
  * text that matched the full pattern, $matches[1]
  * will have the text that matched the first captured parenthesized
  * subpattern, and so on.
  * </p>
- * @param-out string[] $matches
+ * @param-out array<string> $matches
  * @param 0|256|512|768 $flags [optional] <p>
  * <i>flags</i> can be the following flag:
  * <b>PREG_OFFSET_CAPTURE</b>
@@ -165,7 +165,7 @@ namespace gldstdlib\safe;
  *
  * @throws PcreException if an error occurred.
  */
-function preg_match(string $pattern, string $subject, &$matches = [], int $flags = 0, int $offset = 0): int
+function preg_match(string $pattern, string $subject, array &$matches = [], int $flags = 0, int $offset = 0): int
 {
     \error_clear_last();
     // @phpstan-ignore paramOut.type
@@ -181,11 +181,11 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  * pattern and replaces them with
  * replacement.
  *
- * @param string[]|string $pattern The pattern to search for. It can be either a string or an array with
+ * @param array<string>|string $pattern The pattern to search for. It can be either a string or an array with
  * strings.
  * Several PCRE modifiers
  * are also available.
- * @param string[]|string $replacement The string or an array with strings to replace. If this parameter is a
+ * @param array<string>|string $replacement The string or an array with strings to replace. If this parameter is a
  * string and the pattern parameter is an array,
  * all patterns will be replaced by that string. If both
  * pattern and replacement
@@ -215,8 +215,8 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  * preg_replace since it does not know whether you
  * want the \\1 backreference followed by a literal
  * 1, or the \\11 backreference
- * followed by nothing.  In this case the solution is to use
- * ${1}1.  This creates an isolated
+ * followed by nothing. In this case the solution is to use
+ * ${1}1. This creates an isolated
  * $1 backreference, leaving the 1
  * as a literal.
  *
@@ -228,7 +228,7 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  * 'strlen(\'$1\')+strlen("$2")'). Make sure you are
  * aware of PHP's string
  * syntax to know exactly how the interpreted string will look.
- * @param string[]|string $subject The string or an array with strings to search and replace.
+ * @param array<string>|string $subject The string or an array with strings to search and replace.
  * If subject is an array, then the search and
  * replace is performed on every entry of subject,
  * and the return value is an array as well.
@@ -238,7 +238,7 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  * @param $count If specified, this variable will be filled with the number of
  * replacements done.
  *
- * @return ($subject is string ? string : string[]) preg_replace returns an array if the
+ * @return ($subject is string ? string : array<string>) preg_replace returns an array if the
  * subject parameter is an array, or a string
  * otherwise.
  * If matches are found, the new subject will
@@ -247,7 +247,7 @@ function preg_match(string $pattern, string $subject, &$matches = [], int $flags
  *
  * @throws PcreException
  */
-function preg_replace(  // @phpstan-ignore parameterByRef.unusedType
+function preg_replace( // @phpstan-ignore parameterByRef.unusedType
     array|string $pattern,
     array|string $replacement,
     array|string $subject,

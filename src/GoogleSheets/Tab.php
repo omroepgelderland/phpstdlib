@@ -72,7 +72,7 @@ class Tab
             ]),
             [
                 'valueInputOption' => 'USER_ENTERED',
-            ]
+            ],
         );
     }
 
@@ -116,7 +116,7 @@ class Tab
             ]),
             [
                 'valueInputOption' => 'USER_ENTERED',
-            ]
+            ],
         );
     }
 
@@ -155,7 +155,7 @@ class Tab
     public function setCell(
         string $column,
         int $row,
-        mixed $value
+        mixed $value,
     ): \Google\Service\Sheets\UpdateValuesResponse {
         $this->data = null;
         $this->columnTitles = null;
@@ -167,7 +167,7 @@ class Tab
             ]),
             [
                 'valueInputOption' => 'USER_ENTERED',
-            ]
+            ],
         );
     }
 
@@ -194,7 +194,7 @@ class Tab
 
         $cells = $this->api->getService()->spreadsheets_values->get(
             $this->sheet->id,
-            $this->getRange('1', '1')
+            $this->getRange('1', '1'),
         )->values[0];
         $empty_position = \array_search('', $cells);
         if ($empty_position === false) {
@@ -247,7 +247,7 @@ class Tab
         string $end_column,
         int $end_row,
         string $start_column = 'A',
-        int $start_row = 1
+        int $start_row = 1,
     ): array {
         $range = $this->getRange($start_column . $start_row, $end_column . $end_row);
         $result = $this->api->getService()->spreadsheets_values->get($this->sheet->id, $range);
@@ -314,7 +314,7 @@ class Tab
             $input = \str_replace('"', '""', $input);
             return \sprintf(
                 '=TO_TEXT("%s")',
-                $input
+                $input,
             );
         } else {
             return $input;
@@ -351,7 +351,7 @@ class Tab
         $this->api->getService()->spreadsheets_values->clear(
             $this->sheet->id,
             $this->getRange($from, $to),
-            new \Google\Service\Sheets\ClearValuesRequest()
+            new \Google\Service\Sheets\ClearValuesRequest(),
         );
     }
 }

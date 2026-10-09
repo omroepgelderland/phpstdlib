@@ -41,7 +41,7 @@ class Yourls
      */
     private function get_query(
         array $params,
-        int $pogingen = 3
+        int $pogingen = 3,
     ): string {
         try {
             $res = $this->client->post('', [

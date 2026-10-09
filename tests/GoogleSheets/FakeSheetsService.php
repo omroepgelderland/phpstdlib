@@ -16,6 +16,7 @@ final class FakeSheetsService extends \Google\Service\Sheets
             public function get(string $sheetId): object
             {
                 return new class ($this->tabs) {
+                    /** @var array<int, object> */
                     public array $sheets;
 
                     public function __construct(array $tabs)

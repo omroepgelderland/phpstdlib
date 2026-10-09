@@ -94,8 +94,6 @@ class S3
 
     /**
      * Geeft het S3 clientobject.
-     *
-     * @return \Aws\S3\S3Client
      */
     private function get_client(): \Aws\S3\S3Client
     {
@@ -129,13 +127,13 @@ class S3
         $url_pad = \implode(
             '/',
             \array_map(
-                fn($v) => \rawurlencode($v),
-                \explode('/', $this->get_volledig_pad($remote_pad))
-            )
+                static fn($v) => \rawurlencode($v),
+                \explode('/', $this->get_volledig_pad($remote_pad)),
+            ),
         );
         return path_join(
             $this->url_root,
-            $url_pad
+            $url_pad,
         );
     }
 
@@ -159,10 +157,10 @@ class S3
      *
      * @return \Aws\Result<string, mixed> Resultaatobject
      *
-     * @throws FilesystemException Als het lokale bestand geen regulier bestand
-     * is.
      * @throws EmptyFileException Als het lokale bestand leeg is.
      * @throws \Exception Bij uploadfouten
+     * @throws FilesystemException Als het lokale bestand geen regulier bestand
+     * is.
      */
     public function upload(
         string $lokaal_pad,
@@ -171,19 +169,19 @@ class S3
         ?string $content_type = null,
         int $pogingen = 5,
         ?callable $progress_callback = null,
-        \Aws\Multipart\UploadState|null $state = null
+        \Aws\Multipart\UploadState|null $state = null,
     ): \Aws\Result {
         $volledig_remote_pad = $this->get_volledig_pad($remote_pad);
         if (!\is_file($lokaal_pad)) {
             throw new FilesystemException(
-                "\"{$lokaal_pad}\" kan niet worden herkend als regulier bestand"
+                "\"{$lokaal_pad}\" kan niet worden herkend als regulier bestand",
             );
         }
         if (filesize($lokaal_pad) === 0) {
             \clearstatcache(true);
             if (filesize($lokaal_pad) === 0) {
                 throw new EmptyFileException(
-                    "\"{$lokaal_pad}\" is een leeg bestand"
+                    "\"{$lokaal_pad}\" is een leeg bestand",
                 );
             }
         }
@@ -198,7 +196,7 @@ class S3
             'bucket' => $this->bucket_naam,
             'key' => $volledig_remote_pad,
             'acl' => $acl,
-            'before_upload' => fn(\Aws\Command $command) => \gc_collect_cycles(),
+            'before_upload' => static fn(\Aws\Command $command) => \gc_collect_cycles(),
             'params' => $sub_params,
         ];
         if (isset($state)) {
@@ -211,7 +209,7 @@ class S3
         $uploader = new \Aws\S3\MultipartUploader(
             $this->get_client(),
             $lokaal_pad,
-            $parameters
+            $parameters,
         );
         try {
             return $uploader->upload();
@@ -223,7 +221,7 @@ class S3
                 $this->log->notice(
                     'S3::upload("%s", "%s") mislukt. Doe nog een poging.',
                     $lokaal_pad,
-                    $volledig_remote_pad
+                    $volledig_remote_pad,
                 );
                 return $this->upload(
                     $lokaal_pad,
@@ -232,7 +230,7 @@ class S3
                     $content_type,
                     $pogingen - 1,
                     $progress_callback,
-                    $e->getState()
+                    $e->getState(),
                 );
             }
         }
@@ -249,15 +247,15 @@ class S3
      *
      * @return \Aws\Result<string, mixed> Resultaatobject
      *
+     * @throws \Aws\S3\Exception\S3Exception Als het pad op het CDN niet bestaat
+     * @throws \Exception Bij downloadfouten
      * @throws FilesystemException Als het lokale bestand niet kan of mag worden
      * geschreven
-     * @throws \Exception Bij downloadfouten
-     * @throws \Aws\S3\Exception\S3Exception Als het pad op het CDN niet bestaat
      */
     public function download(
         string $remote_pad,
         string $lokaal_pad,
-        bool $overschrijven = true
+        bool $overschrijven = true,
     ): \Aws\Result {
         if (!$overschrijven && \file_exists($lokaal_pad)) {
             throw new FilesystemException(\sprintf('"%s" bestaat al', $lokaal_pad));
@@ -283,7 +281,7 @@ class S3
         return \sprintf(
             's3://%s/%s',
             $this->bucket_naam,
-            $this->get_volledig_pad($remote_pad)
+            $this->get_volledig_pad($remote_pad),
         );
     }
 
@@ -338,7 +336,7 @@ class S3
     {
         return $this->get_client()->doesObjectExist(
             $this->bucket_naam,
-            $this->get_volledig_pad($remote_pad)
+            $this->get_volledig_pad($remote_pad),
         );
     }
 
@@ -386,8 +384,8 @@ class S3
      *
      * @return \Aws\Result<string, mixed>
      *
-     * @throws \Aws\S3\Exception\S3Exception
      * @throws \Aws\Exception\MultipartUploadException
+     * @throws \Aws\S3\Exception\S3Exception
      */
     public function remote_copy(string $remote_src, string $remote_dst): \Aws\Result
     {
@@ -401,7 +399,7 @@ class S3
                 'Bucket' => $this->bucket_naam,
                 'Key' => $this->get_volledig_pad($remote_dst),
             ],
-            self::ACL_PUBLIC
+            self::ACL_PUBLIC,
         );
         return $copier->copy();
     }
@@ -478,7 +476,7 @@ class S3
                 $hash = \sprintf(
                     '%s%s',
                     $etag,
-                    $key
+                    $key,
                 );
                 $lijst[$hash] = $key;
             }
@@ -499,7 +497,7 @@ class S3
     {
         \rename(
             $this->get_stream_wrapper($oud_pad),
-            $this->get_stream_wrapper($nieuw_pad)
+            $this->get_stream_wrapper($nieuw_pad),
         );
     }
 

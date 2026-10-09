@@ -71,7 +71,7 @@ class DBIterator implements \Iterator
     {
         if ($this->position !== 0) {
             throw new GLDException(
-                'Kan iterator niet terugspoelen. Voer een nieuwe query uit.'
+                'Kan iterator niet terugspoelen. Voer een nieuwe query uit.',
             );
         }
     }

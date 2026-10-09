@@ -1,14 +1,15 @@
 #!/bin/bash
 
 function php_codesniffer() {
-    if ! php8.5 vendor/bin/phpcs --standard=ruleset.xml -n; then
+    local options="--standard=phpcs.xml.dist -n --colors --report-width=auto"
+    if ! php8.5 vendor/bin/phpcs $options; then
         echo "Fixen met phpcbf? (j/n)"
         read -r ans
         if [[ $ans != "j" ]]; then
             exit 1
         else
-            php8.5 vendor/bin/phpcbf --standard=ruleset.xml -n || :
-            php8.5 vendor/bin/phpcs --standard=ruleset.xml -n
+            php8.5 vendor/bin/phpcbf $options || :
+            php8.5 vendor/bin/phpcs $options
         fi
     fi
 }

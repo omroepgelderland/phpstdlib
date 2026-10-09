@@ -48,8 +48,6 @@ class Sheet
      *
      * @param ?string $name Name of the tab. Null means the first tab.
      *
-     * @return Tab
-     *
      * @throws SheetsException If the tab does not exist
      */
     public function getTab(?string $name = null): Tab
@@ -60,7 +58,7 @@ class Sheet
             }
         }
         throw new SheetsException(
-            "Sheet {$this->id} has no tab named {$name}"
+            "Sheet {$this->id} has no tab named {$name}",
         );
     }
 

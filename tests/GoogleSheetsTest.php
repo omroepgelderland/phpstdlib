@@ -137,7 +137,7 @@ final class GoogleSheetsTest extends TestCase
                 ['Name' => 'Alice', 'Email' => 'alice@example.com'],
                 ['Name' => 'Bob', 'Email' => 'bob@example.com'],
             ],
-            $tab->getData()
+            $tab->getData(),
         );
     }
 

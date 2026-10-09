@@ -89,7 +89,7 @@ final class OpenAIClientTest extends TestCase
                         }
                     ]
                 }
-                EOT
+                EOT,
             ),
         ]);
         $client = new Client(['handler' => HandlerStack::create($mock)]);
@@ -138,7 +138,7 @@ final class OpenAIClientTest extends TestCase
                         }
                     ]
                 }
-                EOT
+                EOT,
             ),
         ]);
         $client = new Client(['handler' => HandlerStack::create($mock)]);

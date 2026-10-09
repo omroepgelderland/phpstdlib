@@ -239,12 +239,12 @@ class DB
      * @param array<string, mixed> $join
      * @param $nullable Of het resultaat null kan zijn.
      *
-     * @throws SQLNoResultException Als er geen resultaat is.
-     * @throws SQLException Als de query mislukt.
-     * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
-     * database.
      * @throws NullException Als het resultaat null is en $nullable is false.
      * return ($nullable is true ? ?mixed : mixed)
+     * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
+     * database.
+     * @throws SQLException Als de query mislukt.
+     * @throws SQLNoResultException Als er geen resultaat is.
      */
     public function select_single(
         string $table,
@@ -263,13 +263,13 @@ class DB
         if ($res === null && !$this->has($table, $where, $join)) {
             throw new SQLNoResultException(\sprintf(
                 'Geen resultaat bij query: "%s"',
-                $this->get_db()->last()
+                $this->get_db()->last(),
             ));
         }
         if ($res === null && !$nullable) {
             $last = $this->get_db()->last();
             throw new NullException(
-                "respons null bij query \"{$last}\""
+                "respons null bij query \"{$last}\"",
             );
         }
         return $res;
@@ -391,11 +391,11 @@ class DB
      *
      * @return DBObjectIterator<T> Lijst.
      *
-     * @throws SQLNoResultException Als er geen resultaat is.
-     * @throws SQLException Als de query mislukt.
+     * @throws NullException Als het resultaat null is en $nullable is false.
      * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
      * database.
-     * @throws NullException Als het resultaat null is en $nullable is false.
+     * @throws SQLException Als de query mislukt.
+     * @throws SQLNoResultException Als er geen resultaat is.
      */
     public function select_objecten(
         $object_type,
@@ -433,11 +433,11 @@ class DB
      *
      * @return T Resultaat object.
      *
-     * @throws SQLNoResultException Als er geen resultaat is.
-     * @throws SQLException Als de query mislukt.
+     * @throws NullException Als het resultaat null is en $nullable is false.
      * @throws \PDOException Als er geen verbinding kan worden gemaakt met de
      * database.
-     * @throws NullException Als het resultaat null is en $nullable is false.
+     * @throws SQLException Als de query mislukt.
+     * @throws SQLNoResultException Als er geen resultaat is.
      */
     public function select_object(
         $object_type,
@@ -495,7 +495,7 @@ class DB
         if ($statement->rowCount() === 0) {
             throw new SQLException(\sprintf(
                 'Toevoegen van rij mislukt. Query: "%s"',
-                $this->get_db()->last()
+                $this->get_db()->last(),
             ));
         }
         $id = $this->get_db()->id();

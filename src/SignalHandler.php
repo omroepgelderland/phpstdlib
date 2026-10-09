@@ -15,7 +15,7 @@ class SignalHandler
     private bool $exit;
 
     public function __construct(
-        private Log $log
+        private Log $log,
     ) {
         $this->exit = false;
     }

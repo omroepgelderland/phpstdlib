@@ -43,27 +43,27 @@ final class FunctionsTest extends TestCase
     {
         $this->assertEquals(
             '/',
-            path_join('/')
+            path_join('/'),
         );
         $this->assertEquals(
             'rel1/rel2',
-            path_join('rel1', 'rel2')
+            path_join('rel1', 'rel2'),
         );
         $this->assertEquals(
             '/abs1/file',
-            path_join('/abs1', 'file')
+            path_join('/abs1', 'file'),
         );
         $this->assertEquals(
             '/abs1/dir/',
-            path_join('/abs1', 'dir/')
+            path_join('/abs1', 'dir/'),
         );
         $this->assertEquals(
             '/p1/p1/p2/p2',
-            path_join('/p1/p1', 'p2/p2')
+            path_join('/p1/p1', 'p2/p2'),
         );
         $this->assertEquals(
             'p1/p2',
-            path_join('p1/', '/p2')
+            path_join('p1/', '/p2'),
         );
     }
 
@@ -76,11 +76,11 @@ final class FunctionsTest extends TestCase
                 'key1' => 'woord woord',
                 'key2' => 2.3,
                 'nullkey' => null,
-            ])
+            ]),
         );
         $this->assertEquals(
             'https://gld.nl',
-            maak_url_met_querystring('https://gld.nl', [])
+            maak_url_met_querystring('https://gld.nl', []),
         );
     }
 
@@ -112,7 +112,7 @@ final class FunctionsTest extends TestCase
         $this->assertEquals(
             422744,
             guzzle_get_size(
-                'https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_ebchx3WwzbM-Z4_KC_LeLBWr5LZMaAkWkF68'
+                'https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_ebchx3WwzbM-Z4_KC_LeLBWr5LZMaAkWkF68',
             ),
         );
     }
@@ -134,55 +134,55 @@ final class FunctionsTest extends TestCase
     {
         $this->assertEquals(
             '+31617777777',
-            parse_telefoonnummer('+31617777777')
+            parse_telefoonnummer('+31617777777'),
         );
         $this->assertEquals(
             '+31617777777',
-            parse_telefoonnummer('06 17777777')
+            parse_telefoonnummer('06 17777777'),
         );
         $this->assertEquals(
             '+31617777777',
-            parse_telefoonnummer('0617777777')
+            parse_telefoonnummer('0617777777'),
         );
         $this->assertEquals(
             '+31617777777',
-            parse_telefoonnummer('06-17777777')
+            parse_telefoonnummer('06-17777777'),
         );
         $this->assertEquals(
             '+31617777777',
-            parse_telefoonnummer('06-17 77 77 77')
+            parse_telefoonnummer('06-17 77 77 77'),
         );
         $this->assertEquals(
             '+31201234567',
-            parse_telefoonnummer('020 1234567')
+            parse_telefoonnummer('020 1234567'),
         );
         $this->assertEquals(
             '+31301234567',
-            parse_telefoonnummer('030-1234567')
+            parse_telefoonnummer('030-1234567'),
         );
         $this->assertEquals(
             '+31612345678',
-            parse_telefoonnummer('+31 6 12345678')
+            parse_telefoonnummer('+31 6 12345678'),
         );
         $this->assertEquals(
             '+31612345678',
-            parse_telefoonnummer('+31612345678')
+            parse_telefoonnummer('+31612345678'),
         );
         $this->assertEquals(
             '+31612345678',
-            parse_telefoonnummer('0031 6 12345678')
+            parse_telefoonnummer('0031 6 12345678'),
         );
         $this->assertEquals(
             '+31612345678',
-            parse_telefoonnummer('0031-6-12345678')
+            parse_telefoonnummer('0031-6-12345678'),
         );
         $this->assertEquals(
             '+31612345678',
-            parse_telefoonnummer('+31 (0)6 1234 5678')
+            parse_telefoonnummer('+31 (0)6 1234 5678'),
         );
         $this->assertEquals(
             '+31612345678',
-            parse_telefoonnummer('06 - 1234 5678')
+            parse_telefoonnummer('06 - 1234 5678'),
         );
     }
 
@@ -209,17 +209,17 @@ final class FunctionsTest extends TestCase
         // mobiel
         $this->assertEquals(
             '+31 6 17 77 77 77',
-            format_telefoonnummer('+31617777777')
+            format_telefoonnummer('+31617777777'),
         );
         // viercijferig netnummer
         $this->assertEquals(
             '+31 514 12 34 56',
-            format_telefoonnummer('+31514123456')
+            format_telefoonnummer('+31514123456'),
         );
         // driecijferig netnummer
         $this->assertEquals(
             '+31 26 371 37 13',
-            format_telefoonnummer('+31263713713')
+            format_telefoonnummer('+31263713713'),
         );
     }
 
@@ -227,7 +227,7 @@ final class FunctionsTest extends TestCase
     {
         $this->assertEquals(
             'ac⁄dc fooː ﹤bar﹥﹖.ext',
-            vervang_bestandsnaam_tekens('ac/dc foo: <bar>?.ext')
+            vervang_bestandsnaam_tekens('ac/dc foo: <bar>?.ext'),
         );
     }
 
@@ -332,36 +332,36 @@ final class FunctionsTest extends TestCase
             ->getMock();
 
         $mail->method('isSendmail')
-            ->willReturnCallback(function () use (&$calls): void {
+            ->willReturnCallback(static function () use (&$calls): void {
                 $calls['isSendmail']++;
             });
 
         $mail->method('setFrom')
-            ->willReturnCallback(function (string $email, string $name = '') use (&$calls): bool {
+            ->willReturnCallback(static function (string $email, string $name = '') use (&$calls): bool {
                 $calls['setFrom'] = [$email, $name];
                 return true;
             });
 
         $mail->method('addAddress')
-            ->willReturnCallback(function (string $email, string $name = '') use (&$calls): bool {
+            ->willReturnCallback(static function (string $email, string $name = '') use (&$calls): bool {
                 $calls['addAddress'][] = [$email, $name];
                 return true;
             });
 
         $mail->method('addCC')
-            ->willReturnCallback(function (string $email, string $name = '') use (&$calls): bool {
+            ->willReturnCallback(static function (string $email, string $name = '') use (&$calls): bool {
                 $calls['addCC'][] = [$email, $name];
                 return true;
             });
 
         $mail->method('addReplyTo')
-            ->willReturnCallback(function (string $email, string $name = '') use (&$calls): bool {
+            ->willReturnCallback(static function (string $email, string $name = '') use (&$calls): bool {
                 $calls['addReplyTo'] = [$email, $name];
                 return true;
             });
 
         $mail->method('isHTML')
-            ->willReturnCallback(function (bool $isHtml) use (&$calls): void {
+            ->willReturnCallback(static function (bool $isHtml) use (&$calls): void {
                 $calls['isHTML'] = $isHtml;
             });
 
@@ -431,7 +431,7 @@ final class FunctionsTest extends TestCase
         $mail->method('addCC')->willReturn(true);
         $mail->method('addReplyTo')->willReturn(true);
         $mail->method('isHTML')
-            ->willReturnCallback(function (bool $value) use (&$isHtml): void {
+            ->willReturnCallback(static function (bool $value) use (&$isHtml): void {
                 $isHtml = $value;
             });
 
@@ -476,7 +476,7 @@ final class FunctionsTest extends TestCase
         $mail->method('addCC')->willReturn(true);
         $mail->method('addReplyTo')->willReturn(true);
         $mail->method('isHTML')
-            ->willReturnCallback(function (bool $value) use (&$isHtml): void {
+            ->willReturnCallback(static function (bool $value) use (&$isHtml): void {
                 $isHtml = $value;
             });
 
@@ -526,7 +526,7 @@ final class FunctionsTest extends TestCase
 
         $mail->method('addAttachment')
             ->willReturnCallback(
-                function (
+                static function (
                     string $attachmentPath,
                     string $name = '',
                     string $encoding = 'base64',
@@ -546,7 +546,7 @@ final class FunctionsTest extends TestCase
 
         $mail->method('addStringAttachment')
             ->willReturnCallback(
-                function (
+                static function (
                     string $string,
                     string $filename,
                     string $encoding = 'base64',
@@ -571,17 +571,19 @@ final class FunctionsTest extends TestCase
             subject: 'Attachment subject',
             text_message: 'Body',
             html_message: null,
-            attachment_paths: [[
-                'path' => $path,
-                'filename' => 'custom-name.txt',
-                'mimetype' => 'text/plain',
+            attachment_paths: [
+                [
+                    'path' => $path,
+                    'filename' => 'custom-name.txt',
+                    'mimetype' => 'text/plain',
+                ],
             ],
-            ],
-            attachment_data: [[
-                'data' => 'raw-data',
-                'filename' => 'raw.txt',
-                'mimetype' => 'text/plain',
-            ],
+            attachment_data: [
+                [
+                    'data' => 'raw-data',
+                    'filename' => 'raw.txt',
+                    'mimetype' => 'text/plain',
+                ],
             ],
         );
 
@@ -656,11 +658,12 @@ final class FunctionsTest extends TestCase
                 'attachment',
             );
 
-        add_mail_attachment_paths($mail, [[
-            'path' => $path,
-            'filename' => 'report.txt',
-            'mimetype' => 'text/custom',
-        ],
+        add_mail_attachment_paths($mail, [
+            [
+                'path' => $path,
+                'filename' => 'report.txt',
+                'mimetype' => 'text/custom',
+            ],
         ]);
     }
 
@@ -688,10 +691,11 @@ final class FunctionsTest extends TestCase
                 'attachment',
             );
 
-        add_mail_attachment_paths($mail, [[
-            'path' => $path,
-            'filename' => 'report.txt',
-        ],
+        add_mail_attachment_paths($mail, [
+            [
+                'path' => $path,
+                'filename' => 'report.txt',
+            ],
         ]);
     }
 
@@ -726,11 +730,12 @@ final class FunctionsTest extends TestCase
                 },
             );
 
-        add_mail_attachment_data($mail, [[
-            'data' => 'hello world',
-            'filename' => 'greeting.txt',
-            'mimetype' => 'text/plain',
-        ],
+        add_mail_attachment_data($mail, [
+            [
+                'data' => 'hello world',
+                'filename' => 'greeting.txt',
+                'mimetype' => 'text/plain',
+            ],
         ]);
 
         self::assertSame(
@@ -777,10 +782,11 @@ final class FunctionsTest extends TestCase
                 },
             );
 
-        add_mail_attachment_data($mail, [[
-            'data' => $data,
-            'filename' => 'greeting.txt',
-        ],
+        add_mail_attachment_data($mail, [
+            [
+                'data' => $data,
+                'filename' => 'greeting.txt',
+            ],
         ]);
 
         self::assertSame($data, $captured['data']);

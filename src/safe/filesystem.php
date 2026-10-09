@@ -29,7 +29,7 @@ function fclose($stream): void
  * file_get_contents will return FALSE.
  *
  * file_get_contents is the preferred way to read the
- * contents of a file into a string.  It will use memory mapping techniques if
+ * contents of a file into a string. It will use memory mapping techniques if
  * supported by your OS to enhance performance.
  *
  * @param $filename Name of the file to read.
@@ -154,7 +154,7 @@ function file_put_contents(
     string $filename,
     mixed $data,
     int $flags = 0,
-    $context = null
+    $context = null,
 ): int {
     \error_clear_last();
     if ($context !== null) {
@@ -272,10 +272,10 @@ function filesize(string $filename): int
  * 'x'
  *
  * Create and open for writing only; place the file pointer at the
- * beginning of the file.  If the file already exists, the
+ * beginning of the file. If the file already exists, the
  * fopen call will fail by returning FALSE and
- * generating an error of level E_WARNING.  If
- * the file does not exist, attempt to create it.  This is equivalent
+ * generating an error of level E_WARNING. If
+ * the file does not exist, attempt to create it. This is equivalent
  * to specifying O_EXCL|O_CREAT flags for the
  * underlying open(2) system call.
  *
@@ -309,9 +309,9 @@ function filesize(string $filename): int
  * available in PHP compiled on POSIX.1-2008 conform systems.
  *
  * Different operating system families have different line-ending
- * conventions.  When you write a text file and want to insert a line
+ * conventions. When you write a text file and want to insert a line
  * break, you need to use the correct line-ending character(s) for your
- * operating system.  Unix based systems use \n as the
+ * operating system. Unix based systems use \n as the
  * line ending character, Windows based systems use \r\n
  * as the line ending characters and Macintosh based systems (Mac OS Classic) used
  * \r as the line ending character.
@@ -322,9 +322,9 @@ function filesize(string $filename): int
  *
  * Windows offers a text-mode translation flag ('t')
  * which will transparently translate \n to
- * \r\n when working with the file.  In contrast, you
+ * \r\n when working with the file. In contrast, you
  * can also use 'b' to force binary mode, which will not
- * translate your data.  To use these flags, specify either
+ * translate your data. To use these flags, specify either
  * 'b' or 't' as the last character
  * of the mode parameter.
  *
@@ -332,7 +332,7 @@ function filesize(string $filename): int
  * You can use the 't'
  * mode if you are working with plain-text files and you use
  * \n to delimit your line endings in your script, but
- * expect your files to be readable with applications such as old versions of notepad.  You
+ * expect your files to be readable with applications such as old versions of notepad. You
  * should use the 'b' in all other cases.
  *
  * If you specify the 't' flag when working with binary files, you
@@ -355,7 +355,7 @@ function fopen(
     string $filename,
     string $mode,
     bool $use_include_path = false,
-    $context = null
+    $context = null,
 ) {
     \error_clear_last();
     if ($context !== null) {
@@ -417,7 +417,7 @@ function fread($stream, int $length): string
 function fwrite(
     $stream,
     string $data,
-    ?int $length = null
+    ?int $length = null,
 ): int {
     \error_clear_last();
     if ($length !== null) {

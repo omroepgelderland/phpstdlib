@@ -26,7 +26,7 @@ class MXFOmzetter
      * @param $pad Pad naar de video.
      */
     public function __construct(
-        private string $pad
+        private string $pad,
     ) {
     }
 
@@ -124,7 +124,7 @@ class MXFOmzetter
         $advanced_media->filters()->custom(
             '[0:1][0:2]',
             'join=inputs=2:channel_layout=stereo:map=0.0-FL|1.0-FR',
-            '[a]'
+            '[a]',
         );
         $format = $this->get_format($progress_callback);
         if (isset($progress_callback)) {

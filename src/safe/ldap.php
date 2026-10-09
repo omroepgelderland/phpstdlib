@@ -108,7 +108,7 @@ function ldap_bind(\LDAP\Connection $ldap, ?string $dn, ?string $password): void
 function ldap_get_option(
     \LDAP\Connection $ldap,
     int $option,
-    mixed &$value = null
+    mixed &$value = null,
 ): void {
     \error_clear_last();
     $safeResult = \ldap_get_option($ldap, $option, $value);
@@ -222,7 +222,7 @@ function ldap_get_option(
 function ldap_set_option(
     ?\LDAP\Connection $ldap,
     int $option,
-    mixed $value
+    mixed $value,
 ): void {
     \error_clear_last();
     $safeResult = \ldap_set_option($ldap, $option, $value);
@@ -241,15 +241,15 @@ function ldap_set_option(
  * @param $ldap <p>
  * An LDAP link identifier, returned by <b>ldap_connect</b>.
  * </p>
- * @param string|string[] $base <p>
+ * @param string|array<string> $base <p>
  * The base DN for the directory.
  * </p>
- * @param string|string[] $filter <p>
+ * @param string|array<string> $filter <p>
  * The search filter can be simple or advanced, using boolean operators in
  * the format described in the LDAP documentation (see the Netscape Directory SDK for full
  * information on filters).
  * </p>
- * @param string[] $attributes <p>
+ * @param array<string> $attributes <p>
  * An array of the required attributes, e.g. array("mail", "sn", "cn").
  * Note that the "dn" is always returned irrespective of which attributes
  * types are requested.
@@ -292,9 +292,9 @@ function ldap_set_option(
  * one of the following:
  * <b>LDAP_DEREF_NEVER</b> - (default) aliases are never
  * dereferenced.</p>
- * @param ?string[] $controls Array of LDAP Controls to send with the request.
+ * @param ?array<string> $controls Array of LDAP Controls to send with the request.
  *
- * @return \LDAP\Result|\LDAP\Result[]
+ * @return \LDAP\Result|array<\LDAP\Result>
  *
  * @throws LdapException
  */
@@ -307,7 +307,7 @@ function ldap_search(
     int $sizelimit = -1,
     int $timelimit = -1,
     int $deref = 0,
-    ?array $controls = null
+    ?array $controls = null,
 ): \LDAP\Result|array {
     \error_clear_last();
     $safeResult = \ldap_search(
@@ -319,7 +319,7 @@ function ldap_search(
         $sizelimit,
         $timelimit,
         $deref,
-        $controls
+        $controls,
     );
     if ($safeResult === false) {
         throw LdapException::create($ldap);
@@ -359,7 +359,7 @@ function ldap_search(
  */
 function ldap_get_entries(
     \LDAP\Connection $ldap,
-    \LDAP\Result $result
+    \LDAP\Result $result,
 ): array {
     \error_clear_last();
     $safeResult = \ldap_get_entries($ldap, $result);

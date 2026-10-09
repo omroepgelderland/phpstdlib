@@ -15,7 +15,7 @@ final class YourlsTest extends TestCase
     {
         $yourls = new Yourls(self::URI);
         $short_url = $yourls->get_shorturl(
-            'https://www.gld.nl/nieuws/8286931/deze-grote-geldersman-krijgt-na-eeuwen-een-passend-eerbetoon'
+            'https://www.gld.nl/nieuws/8286931/deze-grote-geldersman-krijgt-na-eeuwen-een-passend-eerbetoon',
         );
         $this->assertEquals('https://ogld.nl/hVDJ', $short_url);
     }

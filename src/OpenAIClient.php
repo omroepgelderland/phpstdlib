@@ -42,9 +42,9 @@ final class OpenAIClient
     {
         $this->http = $http ?? new Client([
             'base_uri' => 'https://api.openai.com/v1/',
-            'headers'  => [
+            'headers' => [
                 'Authorization' => "Bearer {$api_key}",
-                'Content-Type'  => 'application/json',
+                'Content-Type' => 'application/json',
             ],
         ]);
     }
@@ -88,19 +88,19 @@ final class OpenAIClient
         if (\is_array($data) && \is_array($data['output'])) {
             $outputs = \array_filter(
                 $data['output'],
-                fn($v) =>
+                static fn($v) =>
                     \is_array($v) &&
                     isset($v['type']) &&
-                    $v['type'] === 'message'
+                    $v['type'] === 'message',
             );
             $output = \array_shift($outputs);
             if (\is_array($output) && \is_array($output['content'])) {
                 $contents = \array_filter(
                     $output['content'],
-                    fn($v) =>
+                    static fn($v) =>
                         \is_array($v) &&
                         isset($v['type']) &&
-                        $v['type'] === 'output_text'
+                        $v['type'] === 'output_text',
                 );
                 $content = \array_shift($contents);
                 if (\is_array($content) && \is_string($content['text'])) {

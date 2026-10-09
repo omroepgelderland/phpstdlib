@@ -15,7 +15,7 @@ class EmailAddress
      */
     public function __construct(
         public string $name,
-        public string $email
+        public string $email,
     ) {
     }
 
@@ -30,7 +30,7 @@ class EmailAddress
             return \sprintf(
                 '%s <%s>',
                 $this->name,
-                $this->email
+                $this->email,
             );
         }
     }

@@ -9,7 +9,7 @@ namespace gldstdlib\safe;
  * directory.
  *
  * @param $directory The directory that will be scanned.
- * @param 0|1|2 $sorting_order By default, the sorted order is alphabetical in ascending order.  If
+ * @param 0|1|2 $sorting_order By default, the sorted order is alphabetical in ascending order. If
  * the optional sorting_order is set to
  * SCANDIR_SORT_DESCENDING, then the sort order is
  * alphabetical in descending order. If it is set to

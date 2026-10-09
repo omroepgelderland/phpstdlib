@@ -46,7 +46,7 @@ class Log
         $this->log_dir = $log_dir;
         $this->mail_info = $mail_info;
         $this->maak_logger(
-            $filename ?? \pathinfo(get_running_script_path())['filename']
+            $filename ?? \pathinfo(get_running_script_path())['filename'],
         );
     }
 
@@ -81,54 +81,54 @@ class Log
             new StreamHandler(
                 $this->get_path('errors5_notice'),
                 Level::Notice,
-                filePermission:0664
+                filePermission:0664,
             ),
-            [Level::Notice]
+            [Level::Notice],
         );
         $this->logger->pushHandler($notice_filter_handler);
         $warn_filter_handler = new FilterHandler(
             new StreamHandler(
                 $this->get_path('errors4_warn'),
                 Level::Notice,
-                filePermission:0664
+                filePermission:0664,
             ),
-            [Level::Notice]
+            [Level::Notice],
         );
         $this->logger->pushHandler($warn_filter_handler);
         $error_filter_handler = new FilterHandler(
             new StreamHandler(
                 $this->get_path('errors3_err'),
                 Level::Notice,
-                filePermission:0664
+                filePermission:0664,
             ),
-            [Level::Notice]
+            [Level::Notice],
         );
         $this->logger->pushHandler($error_filter_handler);
         $crit_filter_handler = new FilterHandler(
             new StreamHandler(
                 $this->get_path('errors2_crit'),
                 Level::Notice,
-                filePermission:0664
+                filePermission:0664,
             ),
-            [Level::Notice]
+            [Level::Notice],
         );
         $this->logger->pushHandler($crit_filter_handler);
         $alert_filter_handler = new FilterHandler(
             new StreamHandler(
                 $this->get_path('errors1_alert'),
                 Level::Notice,
-                filePermission:0664
+                filePermission:0664,
             ),
-            [Level::Notice]
+            [Level::Notice],
         );
         $this->logger->pushHandler($alert_filter_handler);
         $notice_filter_handler = new FilterHandler(
             new StreamHandler(
                 $this->get_path('errors0_emerg'),
                 Level::Notice,
-                filePermission:0664
+                filePermission:0664,
             ),
-            [Level::Notice]
+            [Level::Notice],
         );
 
         $mail_handler = $this->get_mail_handler();
@@ -150,8 +150,8 @@ class Log
             \sprintf(
                 '%s_%s.log',
                 $filename ?? $this->filename,
-                (new \DateTime())->format('Y-m-d')
-            )
+                (new \DateTime())->format('Y-m-d'),
+            ),
         );
     }
 
@@ -208,7 +208,7 @@ class Log
     private function write(
         Level $priority,
         string $msg_format,
-        string|int|float ...$msg_values
+        string|int|float ...$msg_values,
     ): void {
         if (\count($msg_values) === 0) {
             $message = $msg_format;
@@ -235,7 +235,7 @@ class Log
             $info['to'],
             "{$info['project']} error {$this->filename}",
             $info['from'],
-            Level::Critical
+            Level::Critical,
         );
     }
 }

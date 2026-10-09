@@ -112,7 +112,7 @@ final class DBTest extends TestCase
                 'id' => 1,
             ],
             [],
-            false
+            false,
         );
     }
 
@@ -133,7 +133,7 @@ final class DBTest extends TestCase
             [
                 '[>]account' => ['author_id' => 'user_id'],
             ],
-            false
+            false,
         );
     }
 
@@ -152,7 +152,7 @@ final class DBTest extends TestCase
                 'id' => 1,
             ],
             [],
-            false
+            false,
         );
     }
 
@@ -173,7 +173,7 @@ final class DBTest extends TestCase
             [
                 '[>]account' => ['author_id' => 'user_id'],
             ],
-            false
+            false,
         );
     }
 }
