@@ -4,6 +4,7 @@
 /build-dev.sh export-ignore
 /build.sh export-ignore
 /composer.lock export-ignore
+/deploy-dev.sh export-ignore
 /phpstan.dist.neon export-ignore
 /ruleset.xml export-ignore
 /testdata export-ignore

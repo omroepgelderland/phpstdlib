@@ -12,9 +12,13 @@ use PHPUnit\Framework\TestCase;
 
 use function gldstdlib\add_mail_attachment_data;
 use function gldstdlib\add_mail_attachment_paths;
+use function gldstdlib\array_first;
+use function gldstdlib\array_last;
 use function gldstdlib\build_mail;
 use function gldstdlib\format_telefoonnummer;
 use function gldstdlib\fs;
+use function gldstdlib\getApacheUser;
+use function gldstdlib\getPosixUser;
 use function gldstdlib\guzzle_get_contents;
 use function gldstdlib\guzzle_get_size;
 use function gldstdlib\maak_url_met_querystring;
@@ -25,6 +29,7 @@ use function gldstdlib\rrmdir;
 use function gldstdlib\safe\file_put_contents;
 use function gldstdlib\safe\json_decode;
 use function gldstdlib\send_mail;
+use function gldstdlib\setApacheACL;
 use function gldstdlib\split_email_address;
 use function gldstdlib\vervang_bestandsnaam_tekens;
 
@@ -82,6 +87,74 @@ final class FunctionsTest extends TestCase
             'https://gld.nl',
             maak_url_met_querystring('https://gld.nl', []),
         );
+    }
+
+    public function test_array_first_and_last(): void
+    {
+        $values = ['first' => 'Alice', 'second' => 'Bob', 'third' => 'Charlie'];
+
+        self::assertSame('Alice', array_first($values));
+        self::assertSame('Charlie', array_last($values));
+        self::assertNull(array_first([]));
+        self::assertNull(array_last([]));
+    }
+
+    public function test_get_posix_user_matches_system_user(): void
+    {
+        self::assertSame(
+            \posix_getpwuid(\posix_geteuid())['name'],
+            getPosixUser(),
+        );
+    }
+
+    public function test_get_apache_user_returns_known_user_or_throws(): void
+    {
+        if (\posix_getpwnam('www-data') !== false) {
+            self::assertSame('www-data', getApacheUser());
+            return;
+        }
+
+        if (\posix_getpwnam('apache') !== false) {
+            self::assertSame('apache', getApacheUser());
+            return;
+        }
+
+        $this->expectException(\RuntimeException::class);
+        getApacheUser();
+    }
+
+    public function test_set_apache_acl_sets_acl_for_current_and_apache_users(): void
+    {
+        $setfaclPath = [];
+        $getfaclPath = [];
+        \exec('command -v setfacl 2>/dev/null', $setfaclPath, $setfaclExitCode);
+        \exec('command -v getfacl 2>/dev/null', $getfaclPath, $getfaclExitCode);
+
+        if ($setfaclExitCode !== 0 || $getfaclExitCode !== 0) {
+            $this->markTestSkipped('setfacl/getfacl is not installed.');
+        }
+
+        if (\posix_getpwnam('www-data') === false && \posix_getpwnam('apache') === false) {
+            $this->markTestSkipped('No Apache user exists on this system.');
+        }
+
+        $dir = \sys_get_temp_dir() . '/phpstdlib-set-apache-acl-' . \bin2hex(\random_bytes(4));
+        \mkdir($dir, 0777, true);
+
+        setApacheACL($dir);
+
+        $output = [];
+        \exec('getfacl -cp ' . \escapeshellarg($dir), $output, $exitCode);
+
+        self::assertSame(0, $exitCode);
+
+        $acl = \implode("\n", $output);
+        self::assertStringContainsString('user:' . getPosixUser() . ':rwx', $acl);
+        self::assertStringContainsString('user:' . getApacheUser() . ':rwx', $acl);
+        self::assertStringContainsString('default:user:' . getPosixUser() . ':rwx', $acl);
+        self::assertStringContainsString('default:user:' . getApacheUser() . ':rwx', $acl);
+
+        rrmdir($dir);
     }
 
     public function test_guzzle_get_contents(): void

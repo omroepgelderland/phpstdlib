@@ -267,6 +267,8 @@ function exception_error_handler(
 /**
  * Wrapper voor exception_error_handler() met aparte exceptions voor
  * indexerrors, undefined properties en niet gevonden bestanden.
+ *
+ * @deprecated The extra exceptions are an antipattern
  */
 function exception_error_handler_plus(
     int $errno,
@@ -1499,4 +1501,100 @@ function is(object $object, string $class_name): object
         throw new \InvalidArgumentException("Object is not an instance of {$class_name}");
     }
     return $object;
+}
+
+/**
+ * Implementation of the array_first function for PHP versions < 8.5
+ * Use the native function on PHP >= 8.5
+ *
+ * @template K
+ * @template V
+ *
+ * @param array<K, V> $array
+ *
+ * @return V|null
+ */
+#[\Deprecated(since: '8.5')]
+function array_first(array $array)
+{
+    return $array ? $array[array_key_first($array)] : null;
+}
+
+/**
+ * Implementation of the array_last function for PHP versions < 8.5
+ * Use the native function on PHP >= 8.5
+ *
+ * @template K
+ * @template V
+ *
+ * @param array<K, V> $array
+ *
+ * @return V|null
+ */
+#[\Deprecated(since: '8.5')]
+function array_last(array $array)
+{
+    return $array ? $array[array_key_last($array)] : null;
+}
+
+/**
+ * Returns the username of the POSIX user running the script.
+ */
+function getPosixUser(): string
+{
+    return fs(posix_getpwuid(posix_geteuid()))['name'];
+}
+
+/**
+ * Returns the username of the Apache user.
+ *
+ * @return 'www-data'|'apache'
+ */
+function getApacheUser(): string
+{
+    if (posix_getpwnam('www-data') !== false) {
+        return 'www-data';
+    }
+    if (posix_getpwnam('apache') !== false) {
+        return 'apache';
+    }
+    throw new \RuntimeException('No Apache user found.');
+}
+
+/**
+ * Sets the following permissions:
+ * - Read, write, and execute for the CLI user
+ * - Read, write, and execute for the Apache user
+ * - Default ACLs (same as above) for new files and directories within the
+ * specified directory
+ *
+ * @param $dir The directory to set ACLs on.
+ * @param $recursive Whether to apply the ACLs recursively to subdirectories and
+ * files (default: false).
+ */
+function setApacheACL(string $dir, bool $recursive = false): void
+{
+    $cliUser = getPosixUser();
+    $apacheUser = getApacheUser();
+
+    $acl = "u:{$cliUser}:rwX,u:{$apacheUser}:rwX,d:u:{$cliUser}:rwX,d:u:{$apacheUser}:rwX";
+
+    $recursiveFlag = $recursive ? '--recursive' : '';
+
+    $commandArray = [
+        'setfacl',
+        $recursiveFlag,
+        '-m',
+        escapeshellarg($acl),
+        escapeshellarg($dir),
+        '2>&1',
+    ];
+
+    $command = implode(' ', $commandArray);
+
+    exec($command, $output, $exitCode);
+
+    if ($exitCode !== 0) {
+        throw new \RuntimeException(implode("\n", $output));
+    }
 }

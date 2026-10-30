@@ -2,21 +2,22 @@
 
 function php_codesniffer() {
     local options="--standard=phpcs.xml.dist -n --colors --report-width=auto"
-    if ! php8.5 vendor/bin/phpcs $options; then
-        echo "Fixen met phpcbf? (j/n)"
+    if ! vendor/bin/phpcs $options; then
+        echo "Fix with phpcbf? (y/n)"
         read -r ans
-        if [[ $ans != "j" ]]; then
+        if [[ $ans != "y" ]]; then
             exit 1
         else
-            php8.5 vendor/bin/phpcbf $options || :
-            php8.5 vendor/bin/phpcs $options
+            vendor/bin/phpcbf $options
         fi
     fi
 }
 
 set -euo pipefail
 
-export COMPOSER_NO_DEV=0
+projectdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd "$projectdir"
+
 composer8.1 install
 composer8.1 check-platform-reqs
 
