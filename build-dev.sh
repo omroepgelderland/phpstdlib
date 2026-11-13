@@ -1,14 +1,14 @@
 #!/bin/bash
 
 function php_codesniffer() {
-    local options="--standard=phpcs.xml.dist -n --colors --report-width=auto"
-    if ! vendor/bin/phpcs $options; then
+    local options=(--standard=phpcs.xml.dist -n --colors --report-width=auto)
+    if ! vendor/bin/phpcs "${options[@]}"; then
         echo "Fix with phpcbf? (y/n)"
         read -r ans
         if [[ $ans != "y" ]]; then
-            exit 1
+            return 1
         else
-            vendor/bin/phpcbf $options
+            vendor/bin/phpcs "${options[@]}" || return $?
         fi
     fi
 }
