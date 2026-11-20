@@ -228,6 +228,9 @@ function exception_error_handler(
         // Log::notice("Error in module: {$errno} {$errstr} in {$errfile} regel {$errline}");
         return true;
     }
+    if (\PHP_VERSION_ID < 80400 && $errno === \E_STRICT) {
+        throw new StrictErrorException($errstr, 0, $errno, $errfile, $errline);
+    }
     switch ($errno) {
         case \E_ERROR:
             throw new ErrorErrorException($errstr, 0, $errno, $errfile, $errline);
@@ -251,8 +254,6 @@ function exception_error_handler(
             throw new UserWarningErrorException($errstr, 0, $errno, $errfile, $errline);
         case \E_USER_NOTICE:
             throw new UserNoticeErrorException($errstr, 0, $errno, $errfile, $errline);
-        case \E_STRICT:
-            throw new StrictErrorException($errstr, 0, $errno, $errfile, $errline);
         case \E_RECOVERABLE_ERROR:
             throw new RecoverableErrorException($errstr, 0, $errno, $errfile, $errline);
         case \E_DEPRECATED:
